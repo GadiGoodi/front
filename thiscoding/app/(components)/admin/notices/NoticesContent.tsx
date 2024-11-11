@@ -1,6 +1,6 @@
 import "@/app/globals.css"
 import DeleteIcon from '@mui/icons-material/Delete';
-const Post = () => {
+const NoticesContent = () => {
 
 
   const deleteNotices = () => {
@@ -23,4 +23,4 @@ const Post = () => {
     </tr>
   );
 }
-export default Post;
+export default NoticesContent;
