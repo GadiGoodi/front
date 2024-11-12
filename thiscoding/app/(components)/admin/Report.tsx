@@ -3,7 +3,7 @@ import ReportContent from "./ReportContent";
 import "@/app/globals.css"
 import { useState } from "react";
 
-const ReportPost = () => {
+const Report = () => {
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
 
@@ -40,7 +40,7 @@ const ReportPost = () => {
             </div>
           </Link>
         </div>
-        <table className="w-[850] ml-[50] mt-5 mr-[50]">
+        <table className="w-[850] mx-[50] mt-5">
           <thead>
             <tr className="border-t border-b border-black h-[50px]">
               <th className="px-4 py-2 align-middle">신고 사유</th>
@@ -61,4 +61,4 @@ const ReportPost = () => {
     </>
   )
 }
-export default ReportPost;
+export default Report;
