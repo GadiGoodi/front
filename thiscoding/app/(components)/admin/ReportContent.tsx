@@ -2,7 +2,7 @@ import "@/app/globals.css"
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 
-const Post = () => {
+const ReportContent = () => {
   return (
     <tr className="border-b border-black h-[50]">
       <td className="flex justify-center items-center h-[50] text-center">
@@ -17,4 +17,4 @@ const Post = () => {
     </tr>
   );
 }
-export default Post;
+export default ReportContent;
