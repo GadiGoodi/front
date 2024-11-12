@@ -1,7 +1,7 @@
 import "@/app/globals.css"
-import NoticesContent from "./NoticesContent";
+import AdminNoticesContent from "./AdminNoticesContent";
 import Link from "next/link";
-const Notices = () => {
+const AdminNotices = () => {
   return (
     <>
       <>
@@ -18,10 +18,10 @@ const Notices = () => {
               </tr>
             </thead>
             <tbody>
-              <NoticesContent />
-              <NoticesContent />
-              <NoticesContent />
-              <NoticesContent />
+              <AdminNoticesContent />
+              <AdminNoticesContent />
+              <AdminNoticesContent />
+              <AdminNoticesContent />
             </tbody>
           </table>
           <Link href="#" className="w-[90] h-[40] border rounded-2xl flex justify-center items-center border-black absolute right-[50] bottom-[30] text-[#0095E8]">
@@ -32,4 +32,4 @@ const Notices = () => {
     </>
   )
 }
-export default Notices;
+export default AdminNotices;
