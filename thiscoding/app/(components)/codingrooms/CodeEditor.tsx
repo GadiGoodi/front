@@ -142,7 +142,7 @@ const CodeEditor: React.FC = () => {
                         <Editor
                             width="100%" // 부모 div의 크기에 맞게 100% 설정
                             height="100%"
-                            defaultLanguage="javascript"
+                            defaultLanguage="c"
                             value={code}
                             onChange={handleEditorChange}
                             theme="vs-dark"
