@@ -7,8 +7,9 @@ import ChatIcon from '@mui/icons-material/Chat';
 import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import Link from "next/link";
 import QnADetailAnswer from "./QnADetailAnswer";
-import { Dispatch, SetStateAction, useState } from "react";
+import { useState } from "react";
 import UserReportModal from "../../common/UserReportModal";
+import AdminDeleteModal from "../../common/AdminDeleteModal";
 
 
 
@@ -18,6 +19,7 @@ const QnADetail = () => {
   const [isAnswer, setIsAnswer] = useState(false);
   const [isBookMark, setIsBookMark] = useState(false);
   const [isReport, setIsReport] = useState(false);
+  const [isAdminDelete, setIsAdminDelete] = useState(false);
 
   const toggleIsAnswer = () => {
     setIsAnswer(!isAnswer);
@@ -29,6 +31,9 @@ const QnADetail = () => {
 
   const toggleReport = () => {
     setIsReport(!isReport);
+  }
+  const toggleAdminDelete = () => {
+    setIsAdminDelete(!isAdminDelete);
   }
   const postAnswer = () => {
     //답변 작성 api 작성
@@ -45,7 +50,7 @@ const QnADetail = () => {
                 <div>VSCODE 자동입력</div>
               </div>
               <div className="flex items-center !text-xl">
-                <div className="underline text-[#656565] mr-5">삭제</div>
+                <button onClick={toggleAdminDelete} className="underline text-[#656565] mr-5">삭제</button>
                 <PiSirenFill onClick={() => toggleReport()} className="text-[#FC7373]" />
                 {isBookMark === false ?
                   <button onClick={() => toggleBookMark()}>
@@ -105,6 +110,15 @@ const QnADetail = () => {
           <div className="w-full h-full overflow-y-hidden flex justify-center items-center fixed  z-10 inset-0 bg-gray-500/50">
             <UserReportModal
               setIsReport={setIsReport}
+            />
+          </div>
+          :
+          <></>
+        }
+        {isAdminDelete === true ?
+          <div className="w-full h-full overflow-y-hidden flex justify-center items-center fixed  z-10 inset-0 bg-gray-500/50">
+            <AdminDeleteModal
+              setIsAdminDelete={setIsAdminDelete}
             />
           </div>
           :
