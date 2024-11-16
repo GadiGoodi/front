@@ -1,3 +1,4 @@
+'use client'
 import { PiSirenFill } from "react-icons/pi";
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
@@ -7,13 +8,18 @@ import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
 import Link from "next/link";
 import QnADetailAnswer from "./QnADetailAnswer";
 import { useState } from "react";
+import UserReportModal from "../../common/UserReportModal";
+import AdminDeleteModal from "../../common/AdminDeleteModal";
 
 
 
 const QnADetail = () => {
 
+
   const [isAnswer, setIsAnswer] = useState(false);
   const [isBookMark, setIsBookMark] = useState(false);
+  const [isReport, setIsReport] = useState(false);
+  const [isAdminDelete, setIsAdminDelete] = useState(false);
 
   const toggleIsAnswer = () => {
     setIsAnswer(!isAnswer);
@@ -23,13 +29,19 @@ const QnADetail = () => {
     setIsBookMark(!isBookMark);
   }
 
+  const toggleReport = () => {
+    setIsReport(!isReport);
+  }
+  const toggleAdminDelete = () => {
+    setIsAdminDelete(!isAdminDelete);
+  }
   const postAnswer = () => {
     //답변 작성 api 작성
   }
 
   return (
-    <div className=" flex justify-center items-center">
-      <div className="flex-col justify-center items-center">
+    <div className=" flex justify-center items-center ">
+      <div className="flex-col justify-center items-center relative">
         <div className="w-[1200] h-[550] mt-8 bg-white flex-col justify-center items-center rounded-xl relative">
           <div className="flex-col pt-10 justify-center items-center mx-[50]">
             <div className="w-full flex justify-between">
@@ -38,8 +50,8 @@ const QnADetail = () => {
                 <div>VSCODE 자동입력</div>
               </div>
               <div className="flex items-center !text-xl">
-                <div className="underline text-[#656565] mr-5">삭제</div>
-                <PiSirenFill className="text-[#FC7373]" />
+                <button onClick={toggleAdminDelete} className="underline text-[#656565] mr-5">삭제</button>
+                <PiSirenFill onClick={() => toggleReport()} className="text-[#FC7373]" />
                 {isBookMark === false ?
                   <button onClick={() => toggleBookMark()}>
                     <BookmarkBorderIcon />
@@ -76,7 +88,7 @@ const QnADetail = () => {
           <div className="w-[1200] h-[1000] mb-10 flex-col bg-white rounded-md mt-12">
             <div className="flex justify-between mb-7 mx-[50] pt-9">
               <div>답변<span className="text-[#0095E8] ml-1">10</span></div>
-              <select className="border text-[#999999] border-[#E6E6E6] w-[200] h-[40] px-5 py-2 rounded-md shadow-xl border-black">
+              <select className="border text-[#999999] border-[#E6E6E6] w-[200] h-[40] px-5 py-2 rounded-md shadow-xl">
                 <option value="1">추천순</option>
                 <option value="2">최신순</option>
                 <option value="3">오래된순</option>
@@ -93,6 +105,24 @@ const QnADetail = () => {
           </div>
           :
           <div></div>
+        }
+        {isReport === true ?
+          <div className="w-full h-full overflow-y-hidden flex justify-center items-center fixed  z-10 inset-0 bg-gray-500/50">
+            <UserReportModal
+              setIsReport={setIsReport}
+            />
+          </div>
+          :
+          <></>
+        }
+        {isAdminDelete === true ?
+          <div className="w-full h-full overflow-y-hidden flex justify-center items-center fixed  z-10 inset-0 bg-gray-500/50">
+            <AdminDeleteModal
+              setIsAdminDelete={setIsAdminDelete}
+            />
+          </div>
+          :
+          <></>
         }
       </div>
     </div>
