@@ -1,14 +1,26 @@
 import { Dispatch, SetStateAction } from 'react';
-
+import FriendListContent from './FriendListContent';
 interface FriendListProps {
   onFriendClick: (friendName: string) => void;
   onChangeState: (newState: string) => void;
+  onProfileClick: () => void;
 }
 const FriendList: React.FC<FriendListProps> = ({
   onFriendClick,
   onChangeState,
+  onProfileClick,
 }) => {
-  const friends = ['Nell', 'John', 'Alice'];
+  const friends = [
+    '시언',
+    '혜리',
+    '원진',
+    '재원',
+    '인수',
+    '문상환',
+    '남궁성',
+    '김영한',
+    '강요천',
+  ];
 
   return (
     <>
@@ -27,29 +39,12 @@ const FriendList: React.FC<FriendListProps> = ({
         </button>
       </div>
       <div className="border-b-[1px] border-b-[#ebebeb]"></div>
-
-      <div className="m-[20px]">
-        {friends.map((friend) => (
-          <div
-            key={friend}
-            className="flex items-center justify-between mb-[10px] cursor-pointer"
-            onClick={() => onFriendClick(friend)} // 친구 클릭 시 채팅 시작
-          >
-            <button className="w-[36px] h-[36px] rounded-[200px] bg-black"></button>
-            <div className="text-[14px] w-[130px] font-semibold text-[#333333]">
-              {friend}
-            </div>
-            <button className="w-[20px] h-[20px]">
-              <img
-                src="/Cells.svg"
-                alt="Messaging Icon"
-                width="50"
-                height="50"
-              />
-            </button>
-          </div>
-        ))}
-      </div>
+      <FriendListContent
+        onFriendClick={onFriendClick}
+        onProfileClick={onProfileClick}
+        onChangeState={onChangeState}
+        friends={friends}
+      />
     </>
   );
 };
