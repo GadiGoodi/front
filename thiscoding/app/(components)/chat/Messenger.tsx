@@ -6,10 +6,15 @@ import ChatRoom from './ChatRoom';
 const Messenger = () => {
   const [currentState, setCurrentState] = useState<string>('FriendList');
   const [previousState, setPreviousState] = useState<string>('');
+  const [profileSelect, setProfileSelect] = useState<boolean>(false);
 
   const handleStateChange = (newState: string) => {
     setPreviousState(currentState); // 현재 상태를 이전 상태로 저장
     setCurrentState(newState);
+  };
+
+  const handleProfileSelect = () => {
+    setProfileSelect(!profileSelect);
   };
 
   const handleChatSelect = () => {
@@ -26,11 +31,12 @@ const Messenger = () => {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="w-[247px] h-[324px] bg-[#fafafa] rounded-xl fixed bottom-[190px] right-[40px] drop-shadow-md">
+      <div className="w-[300px] h-[440px] bg-[#fafafa] rounded-xl fixed bottom-[190px] right-[40px] drop-shadow-md">
         {currentState === 'FriendList' && (
           <FriendList
             onFriendClick={handleChatSelect}
             onChangeState={handleStateChange}
+            onProfileClick={handleProfileSelect}
           />
         )}
         {currentState === 'ChatList' && (

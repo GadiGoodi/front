@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
+import ChatListContent from './ChatListContent';
 
 interface ChatListProps {
   onChatSelect: (friendName: string) => void;
@@ -6,11 +7,17 @@ interface ChatListProps {
 }
 
 const ChatList: React.FC<ChatListProps> = ({ onChatSelect, onChangeState }) => {
-  const chats = ['Nell', 'John', 'Alice'];
-
-  const handleDoubleClick = (friend: string) => {
-    onChatSelect(friend); // 더블클릭 시 채팅 시작
-  };
+  const chats = [
+    '시언',
+    '혜리',
+    '원진',
+    '재원',
+    '인수',
+    '문상환',
+    '남궁성',
+    '김영한',
+    '강요천',
+  ];
 
   return (
     <>
@@ -29,29 +36,7 @@ const ChatList: React.FC<ChatListProps> = ({ onChatSelect, onChangeState }) => {
         </button>
       </div>
       <div className="border-b-[1px] border-b-[#ebebeb]"></div>
-
-      <div className="m-[20px]">
-        {chats.map((chat) => (
-          <div
-            key={chat}
-            className="flex items-center justify-between mb-[10px] cursor-pointer"
-            onDoubleClick={() => handleDoubleClick(chat)}
-          >
-            <button className="w-[36px] h-[36px] rounded-[200px] bg-black"></button>
-            <div className="w-[140px]">
-              <div className="text-[13px] w-[130px] font-semibold text-[#333333]">
-                {chat}
-              </div>
-              <div className="text-[12px] text-[#666666] ">
-                저 자바 너무 어려워요!
-              </div>
-            </div>
-            <div className="h-[20px] w-[20px] rounded-[200px] bg-[#0095E8] text-[12px] text-white flex justify-center items-center">
-              1
-            </div>
-          </div>
-        ))}
-      </div>
+      <ChatListContent onChatSelect={onChatSelect} chats={chats} />
     </>
   );
 };
