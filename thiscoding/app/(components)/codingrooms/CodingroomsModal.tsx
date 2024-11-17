@@ -39,7 +39,7 @@ const CodingroomsModal = () => {
             }
         };
         
-        // 드롭다운이 열려있을 경우의 클릭 이벤트 리스터
+        // 드롭다운이 열려있을 경우의 클릭 이벤트 리스너
         // 드롭다운이 열려있을 경우, 전체 영역의 클릭을 감지하여 handleClickOutside 함수 실행
         // handleClickOutside 함수는 클릭 위치가 드롭다운 내부가 아닐 경우, 드롭다운을 닫는 함수
         if (isOpen) {
@@ -181,10 +181,21 @@ const CodingroomsModal = () => {
                                     // 다른 자식 요소들과 너비가 다르기에, 직접 너비를 계산하여 적용시킴
                                 */}
                                 <div className="py-1" role="none">
-                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-0">Java</a>
-                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-1">C</a>
-                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-2">C++</a>
-                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-3">JavaScript</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-0">JavaScript</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-1">TypeScript</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-2">HTML</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-3">CSS</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-4">Python</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-5">C</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-6">C++</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-7">C#</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-8">Java</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-9">PHP</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-10">SQL</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-11">R</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-12">Ruby</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-13">Go</a>
+                                    <a href="#" className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100" role="menuitem" id="menu-item-14">Swift</a>
                                 </div>
                             </div>
                         )}
