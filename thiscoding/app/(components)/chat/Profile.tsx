@@ -37,7 +37,7 @@ const Profile: React.FC<ProfileProps> = ({ closeModal, onFriendClick }) => {
       <div className="flex gap-12 ">
         <div
           className="flex flex-col gap-[5px] cursor-pointer"
-          onClick={() => onFriendClick}
+          onClick={onFriendClick}
         >
           <div className="flex items-center justify-center rounded-full w-[50px] h-[40px ">
             <SmsIcon style={{ fontSize: 20, color: '#ffffff' }} />
