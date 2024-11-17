@@ -27,6 +27,9 @@ const ChatBtn = () => {
           />
         )}
       </button>
+      <div className="absoulute h-[30px] w-[30px] bg-[#e64946]  fixed bottom-[118px] right-[45px] flex justify-center items-center  rounded-full text-[12px] text-[#ffffff]">
+        99+
+      </div>
 
       {isMessengerOpen && <Messenger />}
     </>
