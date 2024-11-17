@@ -59,7 +59,7 @@ const FriendListContent: React.FC<FriendListContentProps> = ({
         <Profile
           closeModal={closeModal}
           onFriendClick={onFriendClick}
-          onChangeState={onChangeState}
+          //   onChangeState={onChangeState}
         />
       )}
     </>

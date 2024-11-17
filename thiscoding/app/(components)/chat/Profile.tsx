@@ -4,7 +4,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ChatRoom from './ChatRoom';
 interface ProfileProps {
   closeModal: () => void;
-  onFriendClick: () => void;
+  onFriendClick: (friendName: string) => void;
 }
 
 const Profile: React.FC<ProfileProps> = ({ closeModal, onFriendClick }) => {
@@ -29,23 +29,26 @@ const Profile: React.FC<ProfileProps> = ({ closeModal, onFriendClick }) => {
           React
         </div>
       </div>
+      <div className="flex flex-col justify-center items-center">
+        <div className="text-[16px] text-white">원진</div>
+        <div className="text-[12px] text-white opacity-80">카공하실 분</div>
+      </div>
 
-      <div className="text-[16px] text-white">원진</div>
       <div className="flex gap-12 ">
         <div
           className="flex flex-col gap-[5px] cursor-pointer"
-          onClick={onFriendClick}
+          onClick={() => onFriendClick}
         >
           <div className="flex items-center justify-center rounded-full w-[50px] h-[40px ">
-            <SmsIcon style={{ fontSize: 30, color: '#ffffff' }} />
+            <SmsIcon style={{ fontSize: 20, color: '#ffffff' }} />
           </div>
-          <div className="text-center text-[12px] text-white">1:1 채팅</div>
+          <div className="text-center text-[10px] text-white">1:1 채팅</div>
         </div>
         <div className="flex flex-col gap-[5px] cursor-pointer">
           <div className="flex items-center justify-center rounded-full w-[50px] h-[40px">
-            <HomeIcon style={{ fontSize: 30, color: '#ffffff' }} />
+            <HomeIcon style={{ fontSize: 20, color: '#ffffff' }} />
           </div>
-          <div className="text-center text-[12px] text-white">HOME</div>
+          <div className="text-center text-[10px] text-white">HOME</div>
         </div>
       </div>
     </div>
