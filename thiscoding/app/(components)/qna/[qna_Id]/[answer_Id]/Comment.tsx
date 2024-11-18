@@ -1,11 +1,14 @@
 import { PiSirenFill } from "react-icons/pi";
 import ReplyIcon from '@mui/icons-material/Reply';
 import { Dispatch, SetStateAction } from "react";
+import SendIcon from '@mui/icons-material/Send';
 
-interface ReplyType {
-  setIsReply: Dispatch<SetStateAction<boolean>>;
-}
-const Comment = ({ setIsReply }: ReplyType) => {
+// interface ReplyType {
+//   setIsReply: Dispatch<SetStateAction<boolean>>;
+//   setPostTagReply: Dispatch<SetStateAction<boolean>>;
+// }
+const Comment = ({ setIsReply, setPostTagComment, toggleTagReply, postTagComment, PostReplyHandler }
+  : { setIsReply: Dispatch<SetStateAction<boolean>>, setPostTagComment: Dispatch<SetStateAction<boolean>>, toggleTagReply: () => void, postTagComment: boolean, PostReplyHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void }) => {
 
 
 
@@ -25,7 +28,7 @@ const Comment = ({ setIsReply }: ReplyType) => {
             <button>
               <PiSirenFill className="text-[#FC7373] !text-xl" />
             </button>
-            <button>
+            <button onClick={() => setPostTagComment(true)}>
               <ReplyIcon className='!text-xl mb-1' />
             </button>
           </div>
@@ -34,6 +37,14 @@ const Comment = ({ setIsReply }: ReplyType) => {
         <button onClick={() => setIsReply(true)} className='flex my-3'>
           - 답글 n개 더보기
         </button>
+        {postTagComment === true ?
+          <div className="flex justify-center items-center h-24 gap-2">
+            <textarea onChange={(e) => PostReplyHandler(e)} className="resize-none w-[1000] border border-[#D0D0D0] bg-[#EBEBEB] h-20 flex justify-start items-start" placeholder="작성할 댓글의 내용을 입력해주세요." />
+            <button className="flex justify-end items-end h-24 mb-3 ">
+              <SendIcon />
+            </button>
+          </div>
+          : <></>}
       </div>
     </>
   )

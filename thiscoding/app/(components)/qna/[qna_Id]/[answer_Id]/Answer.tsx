@@ -23,6 +23,8 @@ const Answer = () => {
   const [isAdminDelete, setIsAdminDelete] = useState(false);
   const [isReply, setIsReply] = useState(false);
   const [replyContent, setReplyContent] = useState('');
+  const [postTagReply, setPostTagReply] = useState(false);
+  const [postTagComment, setPostTagComment] = useState(false);
 
   const ReplyHandler = () => {
     setIsReply(!isReply);
@@ -35,6 +37,9 @@ const Answer = () => {
   const toggleBookMark = () => {
     setIsBookMark(!isBookMark);
   }
+  const toggleTagReply = () => {
+    setPostTagReply(!postTagReply);
+  }
 
   const toggleReport = () => {
     setIsReport(!isReport);
@@ -43,7 +48,7 @@ const Answer = () => {
     //답변 작성 api 작성
   }
 
-  const PostReply = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const PostReplyHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setReplyContent(e.target.value);
     //댓글 작성 api
   };
@@ -93,10 +98,10 @@ const Answer = () => {
           </div>
         </div>
         {isComment === true ?
-          <div className="w-[1200] h-[1000] mb-10 flex-col bg-white rounded-md mt-12">
+          <div className="w-[1200] h-auto mb-10 flex-col bg-white rounded-md mt-12">
             <div className="flex-col justify-between mb-7 mx-[50] pt-9">
               <div>댓글<span className="text-[#0095E8] ml-1">28</span></div>
-              <textarea onChange={(e) => PostReply(e)} className="w-full border border-[#D0D0D0] bg-[#EBEBEB] rounded-lg h-24 flex justify-start items-start" placeholder="작성할 댓글의 내용을 입력해주세요." />
+              <textarea onChange={(e) => PostReplyHandler(e)} className="resize-none w-full border border-[#D0D0D0] bg-[#EBEBEB] rounded-lg h-24 flex justify-start items-start" placeholder="작성할 댓글의 내용을 입력해주세요." />
               <button className="flex justify-end w-full">
                 <SendIcon />
               </button>
@@ -104,21 +109,83 @@ const Answer = () => {
             <>
               {isReply === true ?
                 <>
-                  <Comment setIsReply={setIsReply} />
-                  <Comment setIsReply={setIsReply} />
-                  <Reply setIsReply={setIsReply} />
-                  <Reply setIsReply={setIsReply} />
-                  <Comment setIsReply={setIsReply} />
-                  <Reply setIsReply={setIsReply} />
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  <Reply setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    setPostTagReply={setPostTagReply}
+                    postTagReply={postTagReply}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  {postTagReply === true ?
+                    <>
+                      {/* <textarea onChange={(e) => PostReply(e)} className="w-full border border-[#D0D0D0] bg-[#EBEBEB] rounded-lg h-24 flex justify-start items-start" placeholder="작성할 댓글의 내용을 입력해주세요." /> */}
+                    </>
+                    : <></>}
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  <Reply setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    setPostTagReply={setPostTagReply}
+                    postTagReply={postTagReply}
+                    PostReplyHandler={PostReplyHandler}
+                  />
                 </>
                 :
                 <>
-                  <Comment setIsReply={setIsReply} />
-                  <Comment setIsReply={setIsReply} />
-                  <Comment setIsReply={setIsReply} />
-                  <Comment setIsReply={setIsReply} />
-                  <Comment setIsReply={setIsReply} />
-                  <Comment setIsReply={setIsReply} />
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+                  <Comment
+                    setPostTagComment={setPostTagComment}
+                    setIsReply={setIsReply}
+                    toggleTagReply={toggleTagReply}
+                    postTagComment={postTagComment}
+                    PostReplyHandler={PostReplyHandler}
+                  />
+
                 </>
               }
             </>
