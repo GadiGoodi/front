@@ -73,7 +73,7 @@ const QnA = () => {
                 onClick={() => handleClickQnA(2)}
               >답변순</div>
             </div>
-            <Link href="#">
+            <Link href="/qna/post-qna">
               <div className="w-[90] h-[40] rounded-xl border border-black flex justify-center items-center text-[#0095E8]">글쓰기</div>
             </Link>
           </div>
