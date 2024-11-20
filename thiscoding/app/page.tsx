@@ -18,7 +18,7 @@ import SignUp from './(components)/common/SignUp';
 import Login from './(components)/common/LogIn';
 
 export default function Home() {
-  const top10Items = Array(10).fill(null); // Top10 데이터
+  const top10Items = Array(10).fill(null);
 
   const sliderSettings = {
     dots: false, // 하단 점 표시
@@ -65,7 +65,6 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Slider Component */}
       <div className="m-10">
         <Slider {...sliderSettings}>
           {top10Items.map((_, index) => (
