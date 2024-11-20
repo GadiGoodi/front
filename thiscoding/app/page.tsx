@@ -1,4 +1,9 @@
-import React from 'react';
+'use client';
+
+import 'slick-carousel/slick/slick-theme.css';
+import 'slick-carousel/slick/slick.css';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Top10 from '@/app/(components)/Top10';
@@ -6,14 +11,41 @@ import Headers from '@/app/(components)/common/Headers';
 import Footers from '@/app/(components)/common/Footer';
 import bannerImage from '@/public/asset/banner.png';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ScrollUp from './(components)/common/ScrollUp';
+import Chatting from './(components)/common/Chatting';
+import Slider from 'react-slick';
+import SignUp from './(components)/common/SignUp';
+import Login from './(components)/common/LogIn';
 
 export default function Home() {
-  const top10Items = [1, 2, 3, 4, 5];
+  const top10Items = Array(10).fill(null); // Top10 데이터
+
+  const sliderSettings = {
+    dots: false, // 하단 점 표시
+    infinite: true, // 무한 반복
+    slidesToShow: 5, // 한 번에 표시할 슬라이드 개수
+    slidesToScroll: 1, // 한 번에 넘어갈 슬라이드 개수
+    autoplay: true, // 자동 재생
+    autoplaySpeed: 2000, // 자동 재생 속도 (ms)
+    pauseOnHover: true, // 마우스 오버 시 일시 정지
+    arrows: false, // 화살표 표시
+  };
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentModal, setCurrentModal] = useState<'login' | 'signup'>('login');
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const toggleModal = () => {
+    setCurrentModal(currentModal === 'login' ? 'signup' : 'login');
+  };
 
   return (
     <div>
       <Headers />
-
+      <ScrollUp />
+      <Chatting />
       <Image
         src={bannerImage}
         alt="Banner"
@@ -33,16 +65,38 @@ export default function Home() {
         </Link>
       </div>
 
-      <div className="flex justify-center space-x-10 m-10">
-        {top10Items.map((_, index) => (
-          <Top10 key={index} />
-        ))}
+      {/* Slider Component */}
+      <div className="m-10">
+        <Slider {...sliderSettings}>
+          {top10Items.map((_, index) => (
+            <div key={index} className="px-2">
+              <Top10 />
+            </div>
+          ))}
+        </Slider>
       </div>
 
       <div className="m-10 flex items-center">
         <div className="w-[60%] mr-10">
           <span className="text-[#0095E8] font-bold text-2xl">1만명</span>
           <span className="text-2xl">이 THISCODING;과 함께합니다.</span>
+
+          <div className="">
+            <button onClick={openModal} className="bg-blue-500">
+              모달 테스트....
+            </button>
+          </div>
+
+          {isModalOpen && (
+            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+              {currentModal === 'login' ? (
+                <Login onClose={closeModal} toggleModal={toggleModal} />
+              ) : (
+                <SignUp onClose={closeModal} toggleModal={toggleModal} />
+              )}
+            </div>
+          )}
+
           <div className="my-10">
             THISCODING;은 ‘실시간으로 코드를 수정하며 의논할 수는 없을까?’ 라는
             생각에서 시작되었습니다.
