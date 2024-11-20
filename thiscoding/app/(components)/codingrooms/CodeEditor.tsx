@@ -18,21 +18,48 @@ import PersonIcon from "@mui/icons-material/Person";
 import ChatIcon from "@mui/icons-material/Chat";
 import SmartToyIcon from "@mui/icons-material/SmartToy";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
-import MicNoneIcon from '@mui/icons-material/MicNone';
-import MicOffIcon from '@mui/icons-material/MicOff';
-import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
-import HeadsetOffIcon from '@mui/icons-material/HeadsetOff';
-import ToggleOnIcon from '@mui/icons-material/ToggleOn';
-import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import MicNoneIcon from "@mui/icons-material/MicNone";
+import MicOffIcon from "@mui/icons-material/MicOff";
+import HeadsetMicIcon from "@mui/icons-material/HeadsetMic";
+import HeadsetOffIcon from "@mui/icons-material/HeadsetOff";
+import ToggleOnIcon from "@mui/icons-material/ToggleOn";
+import ToggleOffIcon from "@mui/icons-material/ToggleOff";
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
 
 import Link from "next/link";
 
 const CodeEditor: React.FC = () => {
     // 에디터 언어
+    // DB의 코드방 테이블에서 언어 컬럼 값 받아와야 함
     const [language, setLanguage] = useState<string>("javascript");
 
     // 에디터 내 코드
-    const [code, setCode] = useState<string>("// 여기에 코드를 작성하세요.");
+    // const [code, setCode] = useState<string>("// 여기에 코드를 작성하세요.");
+
+    // 상단 파일 탭 목록 (임시)
+    // 저장하는 경우는 DB에서 관리
+    // 초기 상태에서 최소 1개의 파일 탭은 유지하도록 설정
+    // 1개의 파일 탭은 main.확장자 명으로 고정
+    const [fileTabs, setFileTabs] = useState([
+        { name: "main.js", content: "// 여기에 코드를 작성하세요." }
+    ]);
+
+    // 파일 탭 이름 뒤에 붙을 숫자
+    const [fileTabNum, setFileTabNum] = useState<number>(0);
+
+    // 활성화된 파일 탭
+    // 초기값은 files 배열의 0번째 값
+    const [activeFileTab, setActiveFileTab] = useState(fileTabs[0]);
+
+    // 이름을 변경할 파일 탭 요소 번호
+    const [editingFileTabIndex, setEditingFileTabIndex] = useState<number | null>(null);
+
+    // 파일 탭 이름임시 변경 값
+    const [tmpFileTabName, setTmpFileTabName] = useState<string>("");
+
+    // input 훅 관리
+    const fileTabEditRef = useRef<HTMLInputElement>(null);
 
     // 컴파일 및 출력 값
     const [output, setOutput] = useState<string>("");
@@ -62,8 +89,117 @@ const CodeEditor: React.FC = () => {
     const [isVoiceOn, setIsVoiceOn] = useState<boolean>(false);
 
     // 에디터 내 코드 타이핑 변경 감지 함수
+    // const handleEditorChange: OnChange = (value) => {
+    //     // setCode(value || "");
+    // };
+
+    // 코드 변경 감지 핸들러
     const handleEditorChange: OnChange = (value) => {
-        setCode(value || "");
+        // 활성화된 파일의 코드 변경
+        setActiveFileTab({ ...activeFileTab, content: value || "" });
+
+        // map은 배열을 순회하면서 각 항목을 변환한 새 배열을 반환
+        // f는 files 배열의 각 요소
+        // 즉, 활성화된 탭에 변경된 값인 value를 실제 fileTabs의 값에 복붙저장
+        setFileTabs(fileTabs.map(f => f.name === activeFileTab.name ? { ...f, content: value || "" } : f));
+    };
+
+    // 파일 탭 클릭 핸들러
+    const handleTabClick = (file: { name: string; content: string }) => {
+        setActiveFileTab(file);
+    };
+
+    // 파일 탭 추가 핸들러
+    const handleAddFileTab = () => {
+        const netFileTabName = `noname${fileTabNum + 1}.js`; // 파일 이름 자동 생성
+        const newFileTab = { name: netFileTabName, content: "// 여기에 코드를 작성하세요." };
+        setFileTabs([...fileTabs, newFileTab]); // 새 파일 요소 추가
+        setActiveFileTab(newFileTab); // 새 파일을 활성화
+        setFileTabNum(fileTabNum + 1); // 파일 번호 증가
+    };
+
+    // 파일 탭 닫기 핸들러
+    const handleRemoveFile = (fileTabName: string, index: number) => {
+        // 파일 탭이 하나일 경우 닫을 수 없도록 처리
+        if (fileTabs.length <= 1) {
+            return; // 최소 1개의 파일 탭은 남도록
+        }
+
+        // 파일 탭 배열 초기화
+        // filter()는 주어진 조건에 해당되는 요소만 반환
+        // 즉, fileTabName과 일치하는 요소는 제거
+        setFileTabs(fileTabs.filter(f => f.name !== fileTabName));
+
+        // 활성화된 파일 탭 초기화
+        // 만약 활성화된 탭을 닫으려고 한다면
+
+        // if (activeFileTab.name === fileTabName) {
+        //     // 활성화된 탭이 0번째라면, 다시 0번째 탭으로 포커싱
+        //     // 0번째가 아니라면, index-1번째 탭으로 포커싱
+        //     setActiveFileTab(index === 0 ? fileTabs[0] : fileTabs[index]);
+        //     console.log("삭제후 탭" + fileTabs[index].content);
+        //     // setActiveFileTab(fileTabs[index - 1]);
+        //     // setActiveFileTab(fileTabs.length > 1 ? fileTabs[0] : { name: "", content: "" });
+        // }
+
+        setFileTabs((prevFileTabs) => {
+            // 업데이트된 파일 탭 배열
+            const updatedFileTabs = prevFileTabs.filter((f) => f.name !== fileTabName);
+
+            // 활성화된 탭을 닫으려 한다면
+            if (activeFileTab.name === fileTabName) {
+                // 마지막 탭이면 index-1번째, 아니라면 index번째
+                const newIndex = (index === fileTabs.length - 1 ? index - 1 : index);
+                // 해당 인덱스 탭으로 새로이 set
+                setActiveFileTab(updatedFileTabs[newIndex] || { name: "", content: "" });
+            }
+
+            return updatedFileTabs; // 새 배열 반환
+        });
+    };
+
+    // 파일 탭 이름을 편집 모드로 전환
+    const handleFileTabDoubleClick = (index: number) => {
+        setEditingFileTabIndex(index);  // 해당 탭을 편집 모드로 설정
+        setTmpFileTabName(fileTabs[index].name.split(".")[0]); // 변경 중인 파일 명에 대한 초기의 값을 현재 파일 명으로 설정
+    };
+
+    // 키보드 이벤트 처리 (onKeyDown에서 Enter키를 눌렀을 때)
+    // 파일 탭 이름 변경
+    const changeFileTabName = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+        // 엔터를 누를 경우
+        if (e.key === "Enter") {
+            // index번째(현재) 탭의 값과, tmpFileTabName 값이 같을 경우
+            // 즉, 파일명을 변경하지 않은 경우
+            if (fileTabs[index].name === `${tmpFileTabName}.js`) {
+                closeFileTabInput();
+                return;
+            }
+
+            // some은 조건을 만족할 경우 true 반환
+            // 중복되는 파일명이 있을 경우
+            if (fileTabs.some(f => f.name === `${tmpFileTabName}.js`)) {
+                alert("파일명이 중복됩니다.");
+                closeFileTabInput();
+                return;
+            }
+
+            // 업데이트할 파일 탭 배열에 원본 파일 탭 배열 복붙
+            const updatedFileTabs = [...fileTabs];
+            // index번째의 name 값을 초기화
+            updatedFileTabs[index].name = `${tmpFileTabName}.js`;
+            // fileTabs에 업데이트된 배열을 통째로 set
+            setFileTabs(updatedFileTabs);
+            closeFileTabInput();
+            setTmpFileTabName("");
+        }
+    };
+
+    // 파일 탭 이름 편집 모드 종료
+    // input 태그가 포커스를 잃을 때 호출하는 함수 or 종료하고 싶을 때 호출
+    const closeFileTabInput = () => {
+        setTmpFileTabName(""); // 임시 파일명 초기화
+        setEditingFileTabIndex(null);  // 편집 종료
     };
 
     // 실행 출력 값 함수
@@ -121,12 +257,12 @@ const CodeEditor: React.FC = () => {
         }
     };
 
-    // 버튼 클릭 시 파일 입력 요소 클릭을 트리거하는 함수
+    // 파일 가져오기 시, 파일 입력 요소 클릭을 트리거하는 함수
     const handleFileUpload = () => {
         fileInputRef.current?.click();
     };
 
-    // 파일 선택 시 처리할 함수를 작성
+    // 파일 가져오기에서 파일 선택 시, 처리할 함수를 작성
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             const file = event.target.files[0];
@@ -148,6 +284,38 @@ const CodeEditor: React.FC = () => {
     const toggleVoice = () => {
         setIsVoiceOn((prev) => !prev);
     };
+
+    // editingFileTabIndex 상태값 변경에 따른 렌더링
+    useEffect(() => {
+        // 클릭 이벤트
+        // 클릭 영역이 input 내부가 아닐 경우
+        const handleClickOutside = (event: MouseEvent) => {
+            // fileTabEditRef.current
+            // => 해당 ref로 지정된 DOM 요소
+            // !fileTabEditRef.current.contains(event.target as Node)
+            // => 해당 ref로 지정된 DOM 요소 내부에(contains)
+            // => 클릭된 요소(event.target as Node)가 포함되지 않는다면(!)
+            // 즉, 해당 ref 요소가 존재하고, 다른 영역을 클릭했을 경우
+            if (fileTabEditRef.current && !fileTabEditRef.current.contains(event.target as Node)) {
+                // (해당 영역이 존재하고 && !해당 영역이 포함한다면(클릭된 요소))
+
+                // 편집 중인 파일 탭이 없는 것으로 변경
+                setEditingFileTabIndex(null);
+                setTmpFileTabName("");
+            }
+        };
+
+        // 파일 탭 명 편집 모드 중일 경우의 클릭 이벤트 리스너
+        // handleClickOutside 함수는 클릭 위치가 input 내부가 아닐 경우
+        if (editingFileTabIndex !== null) {
+            document.addEventListener("click", handleClickOutside);
+        }
+
+        // 클린업 함수
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+        };
+    }, [editingFileTabIndex]);
 
     return (
         <>
@@ -177,85 +345,105 @@ const CodeEditor: React.FC = () => {
                         className="my-2"
                         type="button"
                         id="left-menu"
+                        title="메뉴"
                         onClick={() => handleLeftTab(0)}>
                         <MenuIcon
                             className={selectedLeftIndex === 0 ? "text-blue-500" : "text-gray-300"}
                             sx={{ fontSize: "2rem" }} />
                     </button>
 
-                    {/* 1. 파일트리 버튼 */}
+                    {/* 1. 파일 목록 버튼 */}
                     <button
                         className="my-2"
                         type="button"
-                        id="left-folder"
+                        id="left-file-list"
+                        title="파일 목록"
                         onClick={() => handleLeftTab(1)}>
                         <FolderIcon
                             className={selectedLeftIndex === 1 ? "text-blue-500" : "text-gray-300"}
                             sx={{ fontSize: "2rem" }} />
                     </button>
 
-                    {/* 2. 저장 버튼 */}
+                    {/* 2. 실행 버튼 */}
+                    <button
+                        className="my-2"
+                        type="button"
+                        id="left-run"
+                        title="실행"
+                        onClick={handleRunCode}>
+                        <PlayArrowIcon
+                            className="text-gray-300"
+                            sx={{ fontSize: "2rem" }} />
+                    </button>
+
+                    {/* 3. 저장 버튼 */}
                     <button
                         className="my-2"
                         type="button"
                         id="left-save"
-                        onClick={() => handleLeftTab(2)}>
+                        title="실행">
                         <SaveIcon
-                            className={selectedLeftIndex === 2 ? "text-blue-500" : "text-gray-300"}
+                            className="text-gray-300"
                             sx={{ fontSize: "2rem" }} />
                     </button>
 
-                    {/* 3. 파일 내보내기 버튼 */}
+                    {/* 4. 파일 내보내기 버튼 */}
                     <button
                         className="my-2"
                         type="button"
                         id="left-export"
-                        onClick={() => handleLeftTab(3)}>
-                        <FileDownloadIcon
-                            className={selectedLeftIndex === 3 ? "text-blue-500" : "text-gray-300"}
-                            sx={{ fontSize: "2rem" }} />
-                    </button>
-
-                    {/* 4. 파일 가져오기 버튼 */}
-                    <button
-                        className="my-2"
-                        type="button"
-                        id="left-import"
+                        title="파일 내보내기"
                         onClick={() => handleLeftTab(4)}>
-                        <FileUploadIcon
+                        <FileDownloadIcon
                             className={selectedLeftIndex === 4 ? "text-blue-500" : "text-gray-300"}
                             sx={{ fontSize: "2rem" }} />
                     </button>
 
-                    {/* 5. 초대 링크 복사 버튼 */}
+                    {/* 5. 파일 가져오기 버튼 */}
                     <button
                         className="my-2"
                         type="button"
-                        id="left-link"
+                        id="left-import"
+                        title="파일 가져오기"
                         onClick={() => handleLeftTab(5)}>
-                        <LinkIcon
+                        <FileUploadIcon
                             className={selectedLeftIndex === 5 ? "text-blue-500" : "text-gray-300"}
                             sx={{ fontSize: "2rem" }} />
                     </button>
 
-                    {/* 6. 다크/라이트 모드 전환 버튼 */}
+                    {/* 6. 초대 링크 복사 버튼 */}
+                    <button
+                        className="my-2"
+                        type="button"
+                        id="left-link"
+                        title="초대 링크"
+                        onClick={() => handleLeftTab(6)}>
+                        <LinkIcon
+                            className={selectedLeftIndex === 6 ? "text-blue-500" : "text-gray-300"}
+                            sx={{ fontSize: "2rem" }} />
+                    </button>
+
+                    {/* 7. 다크/라이트 모드 전환 버튼 */}
                     <button
                         className="my-2"
                         type="button"
                         id="left-theme"
+                        title="테마 전환"
                         onClick={() => handleTheme()}>
-                        {themeMode ? <BedtimeIcon className="text-gray-300" sx={{ fontSize: "2rem" }} /> : <WbSunnyIcon className="text-gray-300" sx={{ fontSize: "2rem" }} />}
+                        {themeMode ? <BedtimeIcon className="text-gray-300" sx={{ fontSize: "2rem" }} />
+                            : <WbSunnyIcon className="text-gray-300" sx={{ fontSize: "2rem" }} />}
 
                     </button>
 
-                    {/* 7. 그리기 레이어 활성화 버튼 */}
+                    {/* 8. 그리기 레이어 활성화 버튼 */}
                     <button
                         className="my-2"
                         type="button"
                         id="left-draw"
-                        onClick={() => handleLeftTab(7)}>
+                        title="화면 위 그리기"
+                        onClick={() => handleLeftTab(8)}>
                         <GestureIcon
-                            className={selectedLeftIndex === 7 ? "text-blue-500" : "text-gray-300"}
+                            className={selectedLeftIndex === 8 ? "text-blue-500" : "text-gray-300"}
                             sx={{ fontSize: "2rem" }} />
                     </button>
                 </div>
@@ -304,83 +492,21 @@ const CodeEditor: React.FC = () => {
                         </div>
                     }
 
-                    {/* 1. 파일트리 */}
+                    {/* 1. 파일 목록 */}
                     {selectedLeftIndex === 1 &&
                         <div className="w-[290px] h-full p-4 text-gray-300 flex flex-col border-r border-black">
-                            <div className="w-full h-full bg-neutral-700 overflow-y-auto"
+                            <div className="w-full h-full p-2 bg-neutral-700 overflow-y-auto"
                                 style={{ scrollbarColor: "#1E1E1E #333" }}>
-                                <p>├─ src/</p>
-                                <p>│   ├─ main.py</p>
-                                <p>│   ├─ main.py</p>
-                                <p>│   ├─ utils.py</p>
-                                <p>│   └─ modules/</p>
-                                <p>│       ├─ module1.py</p>
-                                <p>│       └─ module2.py</p>
-                                <p>│</p>
-                                <p>│   ├─ tests/</p>
-                                <p>│   ├─ test_main.py</p>
-                                <p>│   └─ test_utils.py</p>
-                                <p>│</p>
-                                <p>│   ├─ data/</p>
-                                <p>│   ├─ input/</p>
-                                <p>│   │   ├─ data1.csv</p>
-                                <p>│   │   └─ data2.csv</p>
-                                <p>│   └─ output/</p>
-                                <p>│       └─ results.csv</p>
-                                <p>│</p>
-                                <p>└── README.md</p>
+                                <p>main.js</p>
+                                <p>noname1.js</p>
+                                <p>noname2.js</p>
+                                <p>noname3.js</p>
                             </div>
                         </div>
                     }
 
-                    {/* 2. 저장 */}
-                    {selectedLeftIndex === 2 &&
-                        <div className="w-[290px] h-full p-4 text-gray-300 flex flex-col border-r border-black overflow-y-auto"
-                            style={{ scrollbarColor: "#1E1E1E #333" }}>
-                            <button
-                                className="w-full min-h-20 pl-4 my-2 rounded-md text-left bg-neutral-700 hover:bg-neutral-600"
-                                type="button"
-                                id="save-temp">
-                                <p>자동 저장</p>
-                                <p>2024-10-07 14:49:37</p>
-                            </button>
-
-                            <button
-                                className="w-full min-h-20  pl-4 my-2 rounded-md text-left bg-neutral-700 hover:bg-neutral-600"
-                                type="button"
-                                id="save-01">
-                                <p>2024-10-07 14:49:37</p>
-                                <div className="flex space-x-2 items-center">
-                                    <div className="w-8 h-8 rounded-full border border-black">사진</div>
-                                    <p>Neil</p>
-                                </div>
-                            </button>
-
-                            <button
-                                className="w-full min-h-20 pl-4 my-2 rounded-md text-left bg-neutral-700 hover:bg-neutral-600"
-                                type="button"
-                                id="save-02">
-                                <p>코드 저장칸 2</p>
-                            </button>
-
-                            <button
-                                className="w-full min-h-20  pl-4 my-2 rounded-md text-left bg-neutral-700 hover:bg-neutral-600"
-                                type="button"
-                                id="save-03">
-                                <p>코드 저장칸 3</p>
-                            </button>
-
-                            <button
-                                className="w-full min-h-20  pl-4 my-2 rounded-md text-left bg-neutral-700 hover:bg-neutral-600"
-                                type="button"
-                                id="save-04">
-                                <p>코드 저장칸 4</p>
-                            </button>
-                        </div>
-                    }
-
-                    {/* 3. 파일 내보내기 */}
-                    {selectedLeftIndex === 3 &&
+                    {/* 4. 파일 내보내기 */}
+                    {selectedLeftIndex === 4 &&
                         <div className="w-[290px] h-full p-4 text-gray-300 flex flex-col border-r border-black">
                             <button
                                 className="w-full min-h-20 pl-4 my-2 rounded-md bg-neutral-700 hover:bg-neutral-600"
@@ -391,15 +517,15 @@ const CodeEditor: React.FC = () => {
                         </div>
                     }
 
-                    {/* 4. 파일 가져오기 */}
-                    {selectedLeftIndex === 4 &&
+                    {/* 5. 파일 가져오기 */}
+                    {selectedLeftIndex === 5 &&
                         <div className="w-[290px] h-full p-4 text-gray-300 flex flex-col border-r border-black">
                             <button
                                 className="w-full min-h-20 pl-4 my-2 rounded-md bg-neutral-700 hover:bg-neutral-600"
                                 type="button"
                                 id="import-file"
                                 onClick={handleFileUpload}>
-                                파일 업로드
+                                파일 가져오기
                             </button>
 
                             <input
@@ -411,14 +537,15 @@ const CodeEditor: React.FC = () => {
                         </div>
                     }
 
-                    {/* 5. 초대 링크 복사 */}
-                    {selectedLeftIndex === 5 &&
+                    {/* 6. 초대 링크 복사 */}
+                    {selectedLeftIndex === 6 &&
                         <div className="w-[290px] h-full p-4 flex flex-col border-r border-black overflow-y-auto"
                             style={{ scrollbarColor: "#1E1E1E #333" }}>
                             <button
                                 className="w-full min-h-20 p-4 my-2 flex items-center rounded-md  text-gray-300 text-xs text-left bg-neutral-700 hover:bg-neutral-600"
                                 type="button"
                                 id="copy-link"
+                                title="링크 복사"
                                 onClick={handleCopyClick}>
                                 <p className="w-full break-words">
                                     https://github.com/orgs/GadiGoodi/repositories
@@ -427,28 +554,68 @@ const CodeEditor: React.FC = () => {
                         </div>
                     }
 
-                    {/* 6. 다크/라이트 모드 전환 */}
-                    {selectedLeftIndex === 6 &&
+                    {/* 8. 그리기 레이어 활성화 */}
+                    {selectedLeftIndex === 8 &&
                         <div className="w-[290px] h-full p-4 text-gray-300 flex flex-col border-r border-black">
-                            다크/라이트 모드 탭
-                        </div>
-                    }
-
-                    {/* 7. 그리기 레이어 활성화 */}
-                    {selectedLeftIndex === 7 &&
-                        <div className="w-[290px] h-full p-4 text-gray-300 flex flex-col border-r border-black">
-                            그리기 레이어 탭
+                            그리기 레이어 임시 탭
                         </div>
                     }
                 </div>
 
-                {/* 코드 에디터 및 출력 영역 */}
-                <div className="min-w-[240px] h-full flex-grow" style={{ backgroundColor: "#1E1E1E" }}>
+                {/* 에디터 및 출력 영역 */}
+                <div className="min-w-[240px] h-screen flex flex-grow flex-col" style={{ backgroundColor: "#1E1E1E" }}>
                     {/* 
                         min-w-[240px]: 최소 너비 240px
                         h-full: 높이를 전체 높이로
                         flex-grow: 남는 공간에 대해, 해당 요소를 전부 채워줌
                     */}
+
+                    {/* 상단 탭 영역 */}
+                    <div className="tabs bg-neutral-900 text-gray-300 flex flex-nowrap items-center">
+                        {fileTabs.map((file, index) => (
+                            <div key={index} className={`flex items-center px-4 py-1 ${activeFileTab.name === file.name ? "bg-[#1E1E1E]" : "bg-neutral-900"}`}>
+                                <button
+                                    onClick={() => handleTabClick(file)}
+                                    onDoubleClick={() => handleFileTabDoubleClick(index)}
+                                >
+                                    {editingFileTabIndex === index ? (
+                                        <input
+                                            type="text"
+                                            ref={fileTabEditRef}
+                                            value={tmpFileTabName}
+                                            onChange={(e) => setTmpFileTabName(e.target.value)}
+                                            onBlur={closeFileTabInput} // input 요소가 포커스를 잃을 때 이벤트
+                                            onKeyDown={(e) => changeFileTabName(e, index)}
+                                            className="bg-transparent text-gray-300 border-none focus:outline-none"
+                                        />
+                                    ) : (
+                                        file.name
+                                    )}
+
+                                </button>
+                                <button
+                                    onClick={() => handleRemoveFile(file.name, index)}
+                                    className="ml-2"
+                                    disabled={fileTabs.length <= 1} // 최소 1개의 파일이 남도록 비활성화
+                                    id="remove-tab"
+                                >
+                                    <CloseIcon
+                                        className="text-gray-300 hover:text-red-800"
+                                        sx={{ fontSize: "1rem" }} />
+                                </button>
+                            </div>
+                        ))}
+                        <button
+                            onClick={handleAddFileTab}
+                            className="py-1 px-1 text-white"
+                            title="새 탭"
+                            id="add-tab"
+                        >
+                            <AddIcon
+                                className="text-gray-300"
+                                sx={{ fontSize: "1rem" }} />
+                        </button>
+                    </div>
 
                     {/* 코드 에디터 영역 */}
                     <div className="h-3/4 border-b border-black">
@@ -456,9 +623,9 @@ const CodeEditor: React.FC = () => {
                             width="100%" // 부모 div의 크기에 맞게 100% 설정
                             height="100%"
                             defaultLanguage={language}
-                            value={code}
+                            value={activeFileTab.content}
                             onChange={handleEditorChange}
-                            theme="vs-dark"
+                            theme={themeMode ? "vs-light" : "vs-dark"}
                             options={{
                                 wordWrap: "off", // 자동 줄 바꿈 비활성화
                                 scrollBeyondLastLine: true, // 마지막 줄 이후로 스크롤 가능
@@ -473,21 +640,9 @@ const CodeEditor: React.FC = () => {
                     </div>
 
                     {/* 출력 영역 */}
-                    <div className="h-1/4 flex flex-col overflow-y-auto"
+                    <div className="h-1/4 p-2 text-gray-300 flex-grow overflow-auto"
                         style={{ scrollbarColor: "#1E1E1E #333" }}>
-                        <div className="text-right pr-2 p-1 border-b border-black">
-                            <button
-                                onClick={handleRunCode}
-                                type="button"
-                                id="output-code">
-                                <PlayArrowIcon className="text-gray-300" sx={{ fontSize: "2rem" }} />
-                            </button>
-                        </div>
-
-                        <div className="p-2 text-gray-300 flex-grow overflow-y-auto"
-                            style={{ scrollbarColor: "#1E1E1E #333" }}>
-                            <pre>{output}</pre>
-                        </div>
+                        <pre>{output}</pre>
                     </div>
                 </div>
 
@@ -507,7 +662,8 @@ const CodeEditor: React.FC = () => {
                                     <button
                                         className="flex space-x-2 items-center"
                                         type="button"
-                                        id="add-friend">
+                                        id="add-friend"
+                                        title="친구 추가">
                                         <PersonAddAlt1Icon
                                             className="text-gray-300"
                                             sx={{ fontSize: "2rem" }} />
@@ -523,7 +679,8 @@ const CodeEditor: React.FC = () => {
                                     <button
                                         className="flex space-x-2 items-center"
                                         type="button"
-                                        id="add-friend">
+                                        id="add-friend"
+                                        title="친구 추가">
                                         <PersonAddAlt1Icon
                                             className="text-gray-300"
                                             sx={{ fontSize: "2rem" }} />
@@ -539,7 +696,8 @@ const CodeEditor: React.FC = () => {
                                     <button
                                         className="flex space-x-2 items-center"
                                         type="button"
-                                        id="add-friend">
+                                        id="add-friend"
+                                        title="친구 추가">
                                         <PersonAddAlt1Icon
                                             className="text-gray-300"
                                             sx={{ fontSize: "2rem" }} />
@@ -555,7 +713,8 @@ const CodeEditor: React.FC = () => {
                                     <button
                                         className="flex space-x-2 items-center"
                                         type="button"
-                                        id="add-friend">
+                                        id="add-friend"
+                                        title="친구 추가">
                                         <PersonAddAlt1Icon
                                             className="text-gray-300"
                                             sx={{ fontSize: "2rem" }} />
@@ -571,7 +730,8 @@ const CodeEditor: React.FC = () => {
                                     <button
                                         className="flex space-x-2 items-center"
                                         type="button"
-                                        id="add-friend">
+                                        id="add-friend"
+                                        title="친구 추가">
                                         <PersonAddAlt1Icon
                                             className="text-gray-300"
                                             sx={{ fontSize: "2rem" }} />
@@ -610,14 +770,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -634,14 +796,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -658,14 +822,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -682,14 +848,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -706,14 +874,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -730,14 +900,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -754,14 +926,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -778,14 +952,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -802,14 +978,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -826,14 +1004,16 @@ const CodeEditor: React.FC = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="invite-friend"
+                                            title="초대하기">
                                             <GroupAddIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
                                         </button>
                                         <button
                                             type="button"
-                                            id="invite-friend">
+                                            id="chat-friend"
+                                            title="채팅하기">
                                             <ChatIcon
                                                 className="text-gray-300"
                                                 sx={{ fontSize: "2rem" }} />
@@ -927,6 +1107,7 @@ const CodeEditor: React.FC = () => {
                         className="my-2"
                         type="button"
                         id="right-participant"
+                        title="참여자 목록"
                         onClick={() => handleRightTab(0)}>
                         <PersonIcon
                             className={selectedRightIndex === 0 ? "text-blue-500" : "text-gray-300"}
@@ -938,6 +1119,7 @@ const CodeEditor: React.FC = () => {
                         className="my-2"
                         type="button"
                         id="right-chat"
+                        title="채팅"
                         onClick={() => handleRightTab(1)}>
                         <ChatIcon
                             className={selectedRightIndex === 1 ? "text-blue-500" : "text-gray-300"}
@@ -949,6 +1131,7 @@ const CodeEditor: React.FC = () => {
                         className="my-2"
                         type="button"
                         id="right-ai"
+                        title="AI 채팅"
                         onClick={() => handleRightTab(2)}>
                         <SmartToyIcon
                             className={selectedRightIndex === 2 ? "text-blue-500" : "text-gray-300"}
@@ -960,6 +1143,7 @@ const CodeEditor: React.FC = () => {
                         className="my-2"
                         type="button"
                         id="right-invite"
+                        title="친구 초대"
                         onClick={() => handleRightTab(3)}>
                         <PersonAddAlt1Icon
                             className={selectedRightIndex === 3 ? "text-blue-500" : "text-gray-300"}
