@@ -37,3 +37,12 @@ a {
   text-decoration: none;
   color: black;
 }
+.text-overflow {
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* 5줄까지만 표시 */
+  -webkit-box-orient: vertical;
+  overflow: hidden; /* 넘치는 텍스트 숨기기 */
+  text-overflow: ellipsis; /* 텍스트 넘칠 경우 ... 추가 */
+  word-break: break-word; /* 긴 단어 끊기 */
+  max-height: calc(5); /* 5줄 높이로 최대 높이 제한 */
+}
