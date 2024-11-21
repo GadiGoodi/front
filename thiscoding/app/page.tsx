@@ -21,14 +21,16 @@ export default function Home() {
   const top10Items = Array(10).fill(null);
 
   const sliderSettings = {
-    dots: false, // 하단 점 표시
-    infinite: true, // 무한 반복
-    slidesToShow: 5, // 한 번에 표시할 슬라이드 개수
-    slidesToScroll: 1, // 한 번에 넘어갈 슬라이드 개수
-    autoplay: true, // 자동 재생
-    autoplaySpeed: 2000, // 자동 재생 속도 (ms)
-    pauseOnHover: true, // 마우스 오버 시 일시 정지
-    arrows: false, // 화살표 표시
+    dots: false,
+    infinite: true,
+    slidesToShow: 5,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 1,
+    pauseOnHover: true, // 마우스 호버했을때 멈추긴하는데... 하나가 다 보여야 멈춤
+    arrows: false,
+    speed: 5000,
+    cssEase: 'linear',
   };
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,8 +38,8 @@ export default function Home() {
 
   const modalOnOFF = () => {
     setIsModalOpen(!isModalOpen);
-    setCurrentModal("login");
-  }
+    setCurrentModal('login');
+  };
   const toggleModal = () => {
     setCurrentModal(currentModal === 'login' ? 'signup' : 'login');
   };
