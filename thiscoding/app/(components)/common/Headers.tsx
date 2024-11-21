@@ -1,5 +1,7 @@
+'use client';
+
 import '@/app/globals.css';
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
@@ -11,10 +13,10 @@ const Headers = () => {
         <Link href="/" className="text-2xl font-bold">
           THISCODING;
         </Link>
-        <Link href="/code" className="hover:text-[#0095E8]">
+        <Link href="/codingrooms" className="hover:text-[#0095E8]">
           코드방
         </Link>
-        <Link href="/faq" className="hover:text-[#0095E8]">
+        <Link href="/qna" className="hover:text-[#0095E8]">
           질문 & 답변
         </Link>
         <Link href="/notices" className="hover:text-[#0095E8]">
