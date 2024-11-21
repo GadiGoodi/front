@@ -34,8 +34,15 @@ const Top10 = () => {
             </div>
           </div>
 
-          <div className="bg-white w-[250px] h-[140px] p-4 rounded-bl-2xl rounded-br-2xl shadow-lg">
-            본문글
+          <div className="text-overflow bg-white w-[250px] h-[130px] py-[6px] px-3 rounded-bl-2xl rounded-br-2xl shadow-lg">
+            I'm like some kind of supernova Watch out Look at me go, 재미 좀 볼
+            빛의 core, so hot, hot 문이 열려 서로의 존재를 느껴 마치 Discord, 날
+            닮은 너 (incoming!), 너 누구야? (Drop) 사건은 다가와, ah-oh, ayy
+            거세게 커져가, ah-oh, ayy That tick, that tick, tick bomb That tick,
+            that tick, tick bomb 감히 건드리지 못할 걸 (누구도 말이야) 지금 내
+            안에선, su-su-su-supernova Nova, can't stop hyperstellar 원초 그걸
+            찾아 Bring the light of a dying star 불러낸 내 우주를 봐봐,
+            supernova
           </div>
         </Link>
       </div>
