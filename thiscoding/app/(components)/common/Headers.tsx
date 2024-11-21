@@ -5,6 +5,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
+import CodingroomsModal from '../codingrooms/CodingroomsModal';
+
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -16,6 +18,9 @@ const Headers = () => {
   const dropDownHandler = () => {
     setProfileDropDown(!profileDropDown);
   }
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  const openModal = () => setIsModalOpen(!isModalOpen); // 모달 열기
 
   return (
     <header className="bg-white h-[105] flex items-center justify-between px-6">
@@ -23,9 +28,13 @@ const Headers = () => {
         <Link href="/" className="text-2xl font-bold">
           THISCODING;
         </Link>
-        <Link href="/codingrooms" className="hover:text-[#0095E8]">
-          코드방
-        </Link>
+
+        <button onClick={openModal} className="hover:text-[#0095E8]">
+          코드방 생성
+        </button>
+
+        {isModalOpen && <CodingroomsModal />}
+
         <Link href="/qna" className="hover:text-[#0095E8]">
           질문 & 답변
         </Link>
