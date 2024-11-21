@@ -34,9 +34,10 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentModal, setCurrentModal] = useState<'login' | 'signup'>('login');
 
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
-
+  const modalOnOFF = () => {
+    setIsModalOpen(!isModalOpen);
+    setCurrentModal("login");
+  }
   const toggleModal = () => {
     setCurrentModal(currentModal === 'login' ? 'signup' : 'login');
   };
@@ -81,7 +82,7 @@ export default function Home() {
           <span className="text-2xl">이 THISCODING;과 함께합니다.</span>
 
           <div className="">
-            <button onClick={openModal} className="bg-blue-500">
+            <button onClick={modalOnOFF} className="bg-blue-500">
               모달 테스트....
             </button>
           </div>
@@ -89,9 +90,9 @@ export default function Home() {
           {isModalOpen && (
             <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
               {currentModal === 'login' ? (
-                <Login onClose={closeModal} toggleModal={toggleModal} />
+                <Login onClose={modalOnOFF} toggleModal={toggleModal} />
               ) : (
-                <SignUp onClose={closeModal} toggleModal={toggleModal} />
+                <SignUp onClose={modalOnOFF} toggleModal={toggleModal} />
               )}
             </div>
           )}
