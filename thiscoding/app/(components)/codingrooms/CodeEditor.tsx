@@ -745,7 +745,7 @@ const CodeEditor: React.FC = () => {
 
                         {/* 1. 채팅 탭 */}
                         {selectedRightIndex === 1 &&
-                            <div className="w-[290px] h-3/4 flex flex-col justify-between border-b border-black text-gray-300 ">
+                            <div className="w-[290px] h-3/4 flex flex-col justify-between border-b border-black text-gray-300">
                                 {/* 채팅 메시지 영역 */}
                                 <div className="p-4 space-y-3 overflow-y-auto"
                                     style={{ scrollbarColor: "#1E1E1E #333" }}>
@@ -781,7 +781,7 @@ const CodeEditor: React.FC = () => {
                                             <p>닉네임</p>
                                             <div className="max-w-[206px] bg-neutral-700 rounded-md ">
                                                 <p className="p-2 break-words whitespace-normal">
-                                                    저도 잘 모르겠어요.<br/>알아서 잘 어케 해보세요.<br/>아시겠죠?
+                                                    저도 잘 모르겠어요.<br />알아서 잘 어케 해보세요.<br />아시겠죠?
                                                 </p>
                                             </div>
                                         </div>
@@ -800,7 +800,7 @@ const CodeEditor: React.FC = () => {
                                             <p>닉네임</p>
                                             <div className="max-w-[206px] bg-neutral-700 rounded-md ">
                                                 <p className="p-2 break-words whitespace-normal">
-                                                    AI 채팅봇한테 물어볼까요?<br/>머리가 상당히 아프네요
+                                                    AI 채팅봇한테 물어볼까요?<br />머리가 상당히 아프네요
                                                 </p>
                                             </div>
                                         </div>
@@ -832,11 +832,11 @@ const CodeEditor: React.FC = () => {
                                     <textarea className="flex-grow h-6 resize-none rounded-3xl bg-neutral-700 text-gray-300 outline-none px-2">
                                     </textarea>
                                     <button
-                                    className="p-2 rounded-full text-white focus:outline-none"
-                                    type="button"
-                                    id="send-chat">
+                                        className="p-2 rounded-full text-white focus:outline-none"
+                                        type="button"
+                                        id="send-chat">
                                         <SendIcon className="text-gray-300"
-                                            sx={{ fontSize: "1.5rem" }}/>
+                                            sx={{ fontSize: "1.5rem" }} />
                                     </button>
                                 </div>
                             </div>
@@ -844,9 +844,54 @@ const CodeEditor: React.FC = () => {
 
                         {/* 2. AI 채팅 탭 */}
                         {selectedRightIndex === 2 &&
-                            <div className=" w-[290px] h-3/4 p-4 text-gray-300 flex flex-col border-b border-black"
-                                style={{ scrollbarColor: "#1E1E1E #333" }}>
-                                AI 채팅 탭
+                            <div className="w-[290px] h-3/4 flex flex-col justify-between border-b border-black text-gray-300 ">
+                                {/* 채팅 메시지 영역 */}
+                                <div className="p-4 space-y-3 overflow-y-auto"
+                                    style={{ scrollbarColor: "#1E1E1E #333" }}>
+                                    {/* AI 채팅 메시지 */}
+                                    <div className="w-full p-1/2 space-x-2 flex text-left">
+                                        <div className="max-w-[206px] bg-neutral-700 rounded-md ">
+                                            <p className="p-2 break-words whitespace-normal">
+                                                안녕하세요! 무엇을 도와드릴까요?
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* 본인 채팅 메시지 */}
+                                    <div className="w-full py-5 space-x-2 flex text-left justify-end">
+                                        {/* 메시지 */}
+                                        <div className="max-w-[206px] bg-neutral-700 rounded-md ">
+                                            <p className="p-2 break-words whitespace-normal">
+                                                재밌는 얘기 해줘
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {/* AI 채팅 메시지 */}
+                                    <div className="w-full p-1/2 space-x-2 flex text-left">
+                                        <div className="max-w-[206px] bg-neutral-700 rounded-md ">
+                                            <p className="p-2 break-words whitespace-normal">
+                                                어느 날, 개구리가 마법사에게 소원을 빌었어.
+                                                "날 똑똑하게 만들어 주세요!"
+                                                그러자 마법사가 개구리를 사람으로 만들어버렸대. 😂
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 채팅 입력창 영역 */}
+                                <div className="flex items-center rounded-3xl bg-neutral-700"
+                                    style={{ scrollbarColor: "#1E1E1E #333" }}>
+                                    <textarea className="flex-grow h-6 resize-none rounded-3xl bg-neutral-700 text-gray-300 outline-none px-2">
+                                    </textarea>
+                                    <button
+                                        className="p-2 rounded-full text-white focus:outline-none"
+                                        type="button"
+                                        id="send-chat">
+                                        <SendIcon className="text-gray-300"
+                                            sx={{ fontSize: "1.5rem" }} />
+                                    </button>
+                                </div>
                             </div>
                         }
 
