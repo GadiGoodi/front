@@ -26,6 +26,7 @@ import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import SendIcon from '@mui/icons-material/Send';
 
 import Link from "next/link";
 
@@ -320,7 +321,7 @@ const CodeEditor: React.FC = () => {
     return (
         <>
             {/* 전체 영역 */}
-            <div className="w-full h-screen flex" style={{ backgroundColor: "#1E1E1E" }}>
+            <div className="w-screen h-screen flex" style={{ backgroundColor: "#1E1E1E" }}>
                 {/* 
                     w-full: 너비를 전체 너비로
                     h-screen: 높이를 전체 높이로
@@ -653,6 +654,7 @@ const CodeEditor: React.FC = () => {
                         {selectedRightIndex === 0 &&
                             <div className="w-[290px] h-3/4 p-4 text-gray-300 border-b border-black overflow-y-auto"
                                 style={{ scrollbarColor: "#1E1E1E #333" }}>
+                                <div className="h-4"></div>
                                 <div className="w-full h-16 p-4 my-2 flex items-center justify-between rounded-md bg-neutral-700 text-left">
                                     <div className="flex space-x-2 items-center">
                                         <div className="w-8 h-8 rounded-full border border-black">사진</div>
@@ -743,9 +745,100 @@ const CodeEditor: React.FC = () => {
 
                         {/* 1. 채팅 탭 */}
                         {selectedRightIndex === 1 &&
-                            <div className="w-[290px] h-3/4 p-4 text-gray-300 flex flex-col border-b border-black"
-                                style={{ scrollbarColor: "#1E1E1E #333" }}>
-                                채팅 탭
+                            <div className="w-[290px] h-3/4 flex flex-col justify-between border-b border-black text-gray-300 ">
+                                {/* 채팅 메시지 영역 */}
+                                <div className="p-4 space-y-3 overflow-y-auto"
+                                    style={{ scrollbarColor: "#1E1E1E #333" }}>
+                                    {/* 채팅 메시지 */}
+                                    <div className="w-full p-1/2 space-x-2 flex text-left">
+                                        {/* 프로필 사진 */}
+                                        <div className="w-8 flex pt-2">
+                                            <div className="w-8 h-8 rounded-full border border-black bg-red-500">
+                                                사진
+                                            </div>
+                                        </div>
+                                        {/* 닉네임 */}
+                                        <div className="flex-col grow space-y-2">
+                                            <p>닉네임</p>
+                                            <div className="max-w-[206px] bg-neutral-700 rounded-md ">
+                                                <p className="p-2 break-words whitespace-normal">
+                                                    이 코드 어떻게 하죠??
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* 채팅 메시지 */}
+                                    <div className="w-full p-1/2 space-x-2 flex text-left">
+                                        {/* 프로필 사진 */}
+                                        <div className="w-8 flex pt-2">
+                                            <div className="w-8 h-8 rounded-full border border-black bg-green-500">
+                                                사진
+                                            </div>
+                                        </div>
+                                        {/* 닉네임 */}
+                                        <div className="flex-col grow space-y-2">
+                                            <p>닉네임</p>
+                                            <div className="max-w-[206px] bg-neutral-700 rounded-md ">
+                                                <p className="p-2 break-words whitespace-normal">
+                                                    저도 잘 모르겠어요.<br/>알아서 잘 어케 해보세요.<br/>아시겠죠?
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* 채팅 메시지 */}
+                                    <div className="w-full p-1/2 space-x-2 flex text-left">
+                                        {/* 프로필 사진 */}
+                                        <div className="w-8 flex pt-2">
+                                            <div className="w-8 h-8 rounded-full border border-black bg-blue-500">
+                                                사진
+                                            </div>
+                                        </div>
+                                        {/* 닉네임 */}
+                                        <div className="flex-col grow space-y-2">
+                                            <p>닉네임</p>
+                                            <div className="max-w-[206px] bg-neutral-700 rounded-md ">
+                                                <p className="p-2 break-words whitespace-normal">
+                                                    AI 채팅봇한테 물어볼까요?<br/>머리가 상당히 아프네요
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* 채팅 메시지 */}
+                                    <div className="w-full p-1/2 space-x-2 flex text-left">
+                                        {/* 프로필 사진 */}
+                                        <div className="w-8 flex pt-2">
+                                            <div className="w-8 h-8 rounded-full border border-black bg-gray-500">
+                                                사진
+                                            </div>
+                                        </div>
+                                        {/* 닉네임 */}
+                                        <div className="flex-col grow space-y-2">
+                                            <p>닉네임</p>
+                                            <div className="max-w-[206px] bg-neutral-700 rounded-md">
+                                                <p className="p-2 break-words whitespace-normal">
+                                                    AI 채팅은 ChatGPT 기반이고, 우측 탭에서 3번째 항목인 로봇 아이콘을 클릭하면 돼요. AI 채팅봇한테 물어보죠.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 채팅 입력창 영역 */}
+                                <div className="flex items-center rounded-3xl bg-neutral-700"
+                                    style={{ scrollbarColor: "#1E1E1E #333" }}>
+                                    <textarea className="flex-grow h-6 resize-none rounded-3xl bg-neutral-700 text-gray-300 outline-none px-2">
+                                    </textarea>
+                                    <button
+                                    className="p-2 rounded-full text-white focus:outline-none"
+                                    type="button"
+                                    id="send-chat">
+                                        <SendIcon className="text-gray-300"
+                                            sx={{ fontSize: "1.5rem" }}/>
+                                    </button>
+                                </div>
                             </div>
                         }
 
