@@ -13,55 +13,6 @@ const CodingroomsModal = () => {
   // 모달 토글 관리
   const [isModalOpen, setIsModalOpen] = useState<boolean>(true);
 
-  // dropdown 여닫힘 상태 관리
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-
-  // div 훅 관리
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  // useRef는 React에서 제공하는 hook
-  // 컴포넌트 내에서 DOM 요소나 변경 가능한 값을 저장할 수 있는 레퍼런스를 생성하는 데 사용
-  // React 컴포넌트가 다시 렌더링되더라도 useRef로 생성된 값은 유지되기 때문에,
-  // 컴포넌트가 마운트되고 업데이트될 때마다 같은 레퍼런스 객체를 유지
-  // HTMLDivElement는 div 요소를 나타내는 인터페이스
-
-  // isOpen 상태 값 변경
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-
-  // isOpen 상태값 변경에 따른 렌더링
-  useEffect(() => {
-    // 클릭 이벤트
-    // dropdownRef.current는 드롭다운 요소에 대한 참조
-    // !dropdownRef.current.contains(event.target as Node)는 클릭한 위치가 드롭다운 요소 내부가 아니라는 것을 확인하는 조건
-    // 즉, 드롭다운 내부가 아니면 드롭다운을 닫음 (false)
-    // event.target은 클릭할 실제 DOM 요소
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    // 드롭다운이 열려있을 경우의 클릭 이벤트 리스너
-    // 드롭다운이 열려있을 경우, 전체 영역의 클릭을 감지하여 handleClickOutside 함수 실행
-    // handleClickOutside 함수는 클릭 위치가 드롭다운 내부가 아닐 경우, 드롭다운을 닫는 함수
-    if (isOpen) {
-      document.addEventListener('click', handleClickOutside);
-    }
-
-    // 클린업 함수
-    // 컴포넌트가 언마운트(화면에서 제거) 되거나, isOpen이 false로 변경될 때
-    // 드롭다운이 닫히게 되면, 외부 클릭을 감지하는 이벤트 리스너도 필요가 없어짐
-    // 즉, 컴포넌트가 사라지거나 할 때 자동으로 정리(클린업) 해주는 함수
-    // 컴포넌트가 화면에서 사라져도 여전히 클릭 이벤트를 감지하면, 불필요한 리소스를 소모하는 메모리 누수를 일으킬 수 있음
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, [isOpen]);
-
   return (
     <>
       {isModalOpen && (
@@ -131,189 +82,31 @@ const CodingroomsModal = () => {
 
                 {/* 언어 dropdown */}
                 <h3 className="my-2">언어</h3>
-                <div ref={dropdownRef}>
-                  {/* dropdown 버튼 */}
-                  <button
-                    type="button"
-                    className="inline-flex w-full justify-between rounded-md px-4 py-3.5 text-gray-400 bg-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100"
-                    id="menu-button"
-                    aria-expanded="true"
-                    aria-haspopup="true"
-                    onClick={toggleDropdown}
-                  >
-                    {/* 
-                                    inline-flex: 요소가 한 줄에 다른 요소와 나란히 배치되며, 내부 콘텐츠가 플렉스 컨테이너로 작동
-                                    w-full: 부모 요소의 전체 너비로
-                                    justify-between: 플렉스 컨테이너에서 자식 요소들을 양쪽 끝으로 배치
-                                    gap-x-1.5: 자식 요소들 사이의 수평 간격을 1.5(0.375rem)로 설정
-                                    rounded-md: 모서리를 중간 정도로 둥글게 (md 크기)
-                                    bg-white: 배경색을 흰색으로
-                                    px-4: 수평 패딩 1rem
-                                    py-3.5: 수직 패딩 0.875rem
-                                    text-gray-400: 텍스트 색상 변경
-                                    shadow-xm: 작은 그림자 적용
-                                    ring-1: 1px 두께의 테두리 추가
-                                    ring-inset: 테두리를 요소 내부에서 그리도록 설정
-                                    ring-gray-300: 테두리 색상 변경
-                                    hover:bg-gray-50: 마우스 호버 시 배경색을 gray-50으로
-                                */}
-                    선택
-                    <KeyboardArrowDownIcon className=" text-gray-400" />
-                  </button>
-                </div>
+                <div className="relative w-full">
+                  <select className="w-full rounded-md px-4 py-3.5 focus:outline-none appearance-none text-gray-400 bg-white shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-100"
+                    name="language" required defaultValue="select">
+                    <option value="select" disabled>선택</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="typscript">TypeScript</option>
+                    <option value="html">HTML</option>
+                    <option value="css">CSS</option>
+                    <option value="python">Python</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="csharp">C#</option>
+                    <option value="java">Java</option>
+                    <option value="php">PHP</option>
+                    <option value="sql">SQL</option>
+                    <option value="r">R</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="go">Go</option>
+                    <option value="swift">Swift</option>
+                  </select>
 
-                {/* 언어 dropdown 요소 */}
-                {isOpen && (
-                  <div
-                    className="absolute z-10 mt-2 w-full rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
-                    style={{ width: 'calc(100% - 2rem)' }}
-                    role="menu"
-                    aria-orientation="vertical"
-                    aria-labelledby="menu-button"
-                    id="dropdown-menu"
-                  >
-                    {/* 
-                                    absolute: 위치를 부모 요소에 대해 절대적으로 설정
-                                    z-10: z-index를 10으로 설정. 값이 높을 수록 z축 기준으로 상단에 표시
-                                    mt-2: 상단 여백을 0.5rem만큼 설정
-                                    w-full: 너비를 부모 요소의 너비만큼
-                                    rounded-md: 모서리를 중간 정도 둥글게
-                                    bg-white: 배경색을 흰색으로
-                                    shadow-lg: 큰 그림자 효과 추가
-                                    ring-1: 1픽셀 두께의 ring(테두리) 추가
-                                    ring-black: ring 색상을 검은색으로
-                                    ring-opacity-5: ring의 불투명도를 설정. 5%만큼 투명하게
-                                    focus:outline-none: 포커스를 받을 때, 브라우저의 기본 외곽선을 제거
-    
-                                    style={{ width: "calc(100% - 2rem)" }}: 너비 세밀하게 적용
-                                    // 해당 요소와 동일한 다른 자식 요소들은 부모 요소의 padding을 적용받는다.
-                                    // 하지만 해당 요소는 absolute 속성을 받기에, 다른 자식 요소처럼 padding을 적용받지 못하여
-                                    // 다른 자식 요소들과 너비가 다르기에, 직접 너비를 계산하여 적용시킴
-                                */}
-                    <div className="py-1" role="none">
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-0"
-                      >
-                        JavaScript
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-1"
-                      >
-                        TypeScript
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-2"
-                      >
-                        HTML
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-3"
-                      >
-                        CSS
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-4"
-                      >
-                        Python
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-5"
-                      >
-                        C
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-6"
-                      >
-                        C++
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-7"
-                      >
-                        C#
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-8"
-                      >
-                        Java
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-9"
-                      >
-                        PHP
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-10"
-                      >
-                        SQL
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-11"
-                      >
-                        R
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-12"
-                      >
-                        Ruby
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-13"
-                      >
-                        Go
-                      </a>
-                      <a
-                        href="#"
-                        className="block px-4 py-3.5 text-gray-700 hover:bg-gray-100"
-                        role="menuitem"
-                        id="menu-item-14"
-                      >
-                        Swift
-                      </a>
-                    </div>
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                    <KeyboardArrowDownIcon className=" text-gray-400" />
                   </div>
-                )}
+                </div>
 
                 {/* 제목 입력란*/}
                 <h3 className="my-2 mt-6">제목</h3>
