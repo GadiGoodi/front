@@ -1,6 +1,7 @@
 import "@/app/globals.css"
 import Editor, { OnChange } from "@monaco-editor/react";
 import { useEffect, useRef, useState } from "react";
+import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
@@ -29,21 +30,46 @@ import AddIcon from '@mui/icons-material/Add';
 import SendIcon from '@mui/icons-material/Send';
 
 import Link from "next/link";
+import axios from "axios";
 
 const CodeEditor: React.FC = () => {
+    // 언어 별 초기 값
+    const codeSnippets: Readonly<Record<string, string>> = {
+        javascript: `/* JavaScript */\n\nconsole.log("Hello, World!")`,
+        typescript: `/* TypeScript */\n\nconsole.log("Hello, World!")`,
+        python: `# Python\n\nprint("Hello, World!")`,
+        c: `/* C */\n#include <stdio.h>\n\nint main(int argc, char *argv[])\n{\n\tprintf("Hello, World!");\n\n\treturn 0;\n}`,
+        cpp: `/* C++ */\n#include <iostream>\n\nusing namespace std;\n\nint main()\n{\n\tcout << "Hello, World!" << endl;\n\n\treturn 0;\n}`,
+        csharp: `/* C# */\nusing System;\n\nclass HelloWorld {\n\tstatic void Main() {\n\t\tConsole.WriteLine("Hello, World!");\n\t}\n}`,
+        java: `/* Java */\n\nclass Main {\n\tstatic public void main(String []args) {\n\t\tSystem.out.println("Hello, World!");\n\t}\n}`,
+        ruby: `# Ruby\n\nputs "Hello, World!"`,
+        go: `/* Go */\n\npackage main\n\nimport (\n\t"fmt"\n)\n\nfunc main() {\n\tfmt.Println("Hello, World!")\n}`,
+        swift: `// Swift\n\nprint("Hello, World!")`
+    };
+
+    const languageVersions: Readonly<Record<string, string>> = {
+        javascript: "18.15.0",
+        typescript: "5.0.3",
+        python: "3.10.0",
+        c: "10.2.0",
+        cpp: "10.2.0",
+        csharp: "6.12.0",
+        java: "15.0.2",
+        ruby: "3.0.1",
+        go: "1.16.2",
+        swift: "5.3.3",
+    };
+
     // 에디터 언어
     // DB의 코드방 테이블에서 언어 컬럼 값 받아와야 함
-    const [language, setLanguage] = useState<string>("javascript");
-
-    // 에디터 내 코드
-    // const [code, setCode] = useState<string>("// 여기에 코드를 작성하세요.");
+    const [language, setLanguage] = useState<string>("swift");
 
     // 상단 파일 탭 목록 (임시)
     // 저장하는 경우는 DB에서 관리
     // 초기 상태에서 최소 1개의 파일 탭은 유지하도록 설정
     // 1개의 파일 탭은 main.확장자 명으로 고정
     const [fileTabs, setFileTabs] = useState([
-        { name: "main.js", content: "// 여기에 코드를 작성하세요." }
+        { name: "main.js", content: codeSnippets[language] }
     ]);
 
     // 파일 탭 이름 뒤에 붙을 숫자
@@ -56,7 +82,7 @@ const CodeEditor: React.FC = () => {
     // 이름을 변경할 파일 탭 요소 번호
     const [editingFileTabIndex, setEditingFileTabIndex] = useState<number | null>(null);
 
-    // 파일 탭 이름임시 변경 값
+    // 파일 탭 이름 임시 변경 값
     const [tmpFileTabName, setTmpFileTabName] = useState<string>("");
 
     // input 훅 관리
@@ -72,6 +98,11 @@ const CodeEditor: React.FC = () => {
     // 오른쪽 탭 인덱스
     // number 타입 or null 값
     const [selectedRightIndex, setSelectedRightIndex] = useState<number | null>(null);
+
+    // 컴파일 상태 값
+    // 컴파일 상태인지 아닌지 판단
+    // 실행 버튼 및 에디터 활성화 여부
+    const [isCompiling, setIsCompiling] = useState<boolean>(false);
 
     // 테마 변수
     // 기본 다크모드 false
@@ -89,10 +120,14 @@ const CodeEditor: React.FC = () => {
     // 음성 채팅 토글
     const [isVoiceOn, setIsVoiceOn] = useState<boolean>(false);
 
-    // 에디터 내 코드 타이핑 변경 감지 함수
-    // const handleEditorChange: OnChange = (value) => {
-    //     // setCode(value || "");
-    // };
+    // 에디터 참조 훅
+    // IStandaloneCodeEditor는 Monaco Editor의 인스턴스를 나타내는 타입
+    const editorRef = useRef<editor.IStandaloneCodeEditor>();
+
+    // pistonAPI
+    const pistonAPI = axios.create({
+        baseURL: "https://emkc.org/api/v2/piston",
+    });
 
     // 코드 변경 감지 핸들러
     const handleEditorChange: OnChange = (value) => {
@@ -113,7 +148,7 @@ const CodeEditor: React.FC = () => {
     // 파일 탭 추가 핸들러
     const handleAddFileTab = () => {
         const netFileTabName = `noname${fileTabNum + 1}.js`; // 파일 이름 자동 생성
-        const newFileTab = { name: netFileTabName, content: "// 여기에 코드를 작성하세요." };
+        const newFileTab = { name: netFileTabName, content: codeSnippets[language] };
         setFileTabs([...fileTabs, newFileTab]); // 새 파일 요소 추가
         setActiveFileTab(newFileTab); // 새 파일을 활성화
         setFileTabNum(fileTabNum + 1); // 파일 번호 증가
@@ -133,16 +168,6 @@ const CodeEditor: React.FC = () => {
 
         // 활성화된 파일 탭 초기화
         // 만약 활성화된 탭을 닫으려고 한다면
-
-        // if (activeFileTab.name === fileTabName) {
-        //     // 활성화된 탭이 0번째라면, 다시 0번째 탭으로 포커싱
-        //     // 0번째가 아니라면, index-1번째 탭으로 포커싱
-        //     setActiveFileTab(index === 0 ? fileTabs[0] : fileTabs[index]);
-        //     console.log("삭제후 탭" + fileTabs[index].content);
-        //     // setActiveFileTab(fileTabs[index - 1]);
-        //     // setActiveFileTab(fileTabs.length > 1 ? fileTabs[0] : { name: "", content: "" });
-        // }
-
         setFileTabs((prevFileTabs) => {
             // 업데이트된 파일 탭 배열
             const updatedFileTabs = prevFileTabs.filter((f) => f.name !== fileTabName);
@@ -165,6 +190,13 @@ const CodeEditor: React.FC = () => {
         setTmpFileTabName(fileTabs[index].name.split(".")[0]); // 변경 중인 파일 명에 대한 초기의 값을 현재 파일 명으로 설정
     };
 
+    // 파일 명에서 유효하지 않은 기호 검사 함수
+    // \ / : * ? " < > | 포함하는지 확인
+    const checkInvalidChars = (char: string): boolean => {
+        const invalidCharsPattern = /[\\\/:*?"<>|]/;
+        return invalidCharsPattern.test(char);
+    };
+
     // 키보드 이벤트 처리 (onKeyDown에서 Enter키를 눌렀을 때)
     // 파일 탭 이름 변경
     const changeFileTabName = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
@@ -185,6 +217,14 @@ const CodeEditor: React.FC = () => {
                 return;
             }
 
+            // 유효하지 않은 기호를 포함한 경우 true 반환
+            // \ / : * ? " < > | 사용 불가
+            if (checkInvalidChars(tmpFileTabName)) {
+                alert("파일명을 확인해주세요.");
+                closeFileTabInput();
+                return;
+            }
+
             // 업데이트할 파일 탭 배열에 원본 파일 탭 배열 복붙
             const updatedFileTabs = [...fileTabs];
             // index번째의 name 값을 초기화
@@ -201,18 +241,6 @@ const CodeEditor: React.FC = () => {
     const closeFileTabInput = () => {
         setTmpFileTabName(""); // 임시 파일명 초기화
         setEditingFileTabIndex(null);  // 편집 종료
-    };
-
-    // 실행 출력 값 함수
-    const handleRunCode = () => {
-        // try {
-        //     // 코드는 브라우저에서 직접 실행할 수 없으며, eval은 사용할 수 없음
-        //     // 이 부분은 Java 코드를 서버나 다른 환경에서 실행할 수 있도록 구현 필요
-        //     setOutput("코드는 브라우저에서 직접 실행할 수 없습니다. 서버 측 실행을 고려하세요.");
-        // } catch (error) {
-        //     setOutput(`Error: ${(error as Error).message}`);
-        // }
-        setOutput("코드는 브라우저에서 직접 실행할 수 없습니다.\n서버 측에서 컴파일 및 실행해주세요.");
     };
 
     // 왼쪽 탭 메뉴 핸들
@@ -284,6 +312,69 @@ const CodeEditor: React.FC = () => {
     // 음성 채팅 토글
     const toggleVoice = () => {
         setIsVoiceOn((prev) => !prev);
+    };
+
+    // Monaco Editor onMount
+    const onMount = (editor: editor.IStandaloneCodeEditor) => {
+        editorRef.current = editor;
+        editor.focus();
+    };
+
+    // 코드 컴파일
+    const executeCode = async (sourceCode: string) => {
+        const response = await pistonAPI.post("/execute", {
+            language: language,
+            version: languageVersions[language],
+            files: [
+                {
+                    content: sourceCode
+                }
+            ],
+        })
+
+        return response.data;
+    };
+
+    // 언어 패키지 출력
+    const getPackages = async (): Promise<void> => {
+        try {
+            const response = await pistonAPI.get("/runtimes");
+            console.log("Packages:", response.data);
+        } catch (error) {
+            console.error("Error fetching packages:", error);
+        }
+    };
+
+    // 실행 버튼 함수
+    const handleRunCode = async () => {
+        // 실행 버튼 및 에디터 비활성화
+        setIsCompiling(true);
+
+        const sourceCode = activeFileTab.content;
+        if (!sourceCode) {
+            setIsCompiling(false);
+            return;
+        }
+
+        try {
+            const { run: result } = await executeCode(sourceCode);
+
+            // 정상적으로 컴파일된 경우
+            // stdout의 값이 공백이 아닐 경우 (길이가 0이 아님)
+            if (result.stdout.trim().length !== 0) {
+                setOutput(result.stdout);
+                alert("컴파일을 성공했습니다.");
+            } else { // 오류
+                setOutput(result.stderr);
+                alert("오류가 발생했습니다.");
+            }
+        } catch (err) {
+            console.log(err);
+            alert("오류가 발생했습니다.\n" + err + "\n코드를 실행할 수 없습니다.");
+        } finally {
+            // 실행 버튼, 에디터 활성화
+            setIsCompiling(false);
+        }
     };
 
     // editingFileTabIndex 상태값 변경에 따른 렌더링
@@ -371,7 +462,8 @@ const CodeEditor: React.FC = () => {
                         type="button"
                         id="left-run"
                         title="실행"
-                        onClick={handleRunCode}>
+                        onClick={handleRunCode}
+                        disabled={isCompiling}>
                         <PlayArrowIcon
                             className="text-gray-300"
                             sx={{ fontSize: "2rem" }} />
@@ -623,9 +715,11 @@ const CodeEditor: React.FC = () => {
                         <Editor
                             width="100%" // 부모 div의 크기에 맞게 100% 설정
                             height="100%"
-                            defaultLanguage={language}
+                            language={language}  // 기본 언어
+                            defaultValue={codeSnippets[language]}
                             value={activeFileTab.content}
                             onChange={handleEditorChange}
+                            onMount={onMount}
                             theme={themeMode ? "vs-light" : "vs-dark"}
                             options={{
                                 wordWrap: "off", // 자동 줄 바꿈 비활성화
@@ -636,6 +730,7 @@ const CodeEditor: React.FC = () => {
                                 minimap: {
                                     enabled: true, // 미니맵 활성화
                                 },
+                                readOnly: isCompiling
                             }}
                         />
                     </div>
