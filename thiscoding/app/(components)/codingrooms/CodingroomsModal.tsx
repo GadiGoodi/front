@@ -87,17 +87,12 @@ const CodingroomsModal = () => {
                     name="language" required defaultValue="select">
                     <option value="select" disabled>선택</option>
                     <option value="javascript">JavaScript</option>
-                    <option value="typscript">TypeScript</option>
-                    <option value="html">HTML</option>
-                    <option value="css">CSS</option>
+                    <option value="typescript">TypeScript</option>
                     <option value="python">Python</option>
                     <option value="c">C</option>
                     <option value="cpp">C++</option>
                     <option value="csharp">C#</option>
                     <option value="java">Java</option>
-                    <option value="php">PHP</option>
-                    <option value="sql">SQL</option>
-                    <option value="r">R</option>
                     <option value="ruby">Ruby</option>
                     <option value="go">Go</option>
                     <option value="swift">Swift</option>
