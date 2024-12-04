@@ -21,11 +21,11 @@ const NoticesDetail = () => {
               1.이메일 계정을 변경하고 싶어요.
               👉 저희 서비스는 이메일 계정 변경이 불가능합니다. 따라서 현재 사용하고 있는 이메일과 다른 이메일을 사용하여 새로 가입을 해주시거나,
               현재 계정의 이메일을 그대로 사용하고 싶으시다면 회원 탈퇴 후 1주일 후 동일한 이메일로 재가입해주시면 됩니다.</div>
-                      </div>
-            </div>
-            <Link href="/notices">
-              <div className='bg-[#444444] text-white w-[75] h-[50] flex justify-center items-center rounded-2xl absolute bottom-8 right-8'>목록</div>
-            </Link>
+          </div>
+        </div>
+        <Link href="/notices">
+          <div className='bg-[#444444] text-white w-[75] h-[50] flex justify-center items-center rounded-2xl absolute bottom-8 right-8'>목록</div>
+        </Link>
       </div>
     </>
   )

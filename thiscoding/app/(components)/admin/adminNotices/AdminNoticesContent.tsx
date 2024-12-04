@@ -1,4 +1,4 @@
-import { AdminNoticesListDTO } from "@/app/(models)/admin/adminNotices/adminNoticesListDTO";
+import { AdminNoticesListDTO } from "@/app/(models)/admin/adminNotices/AdminNoticesListDTO";
 import "@/app/globals.css"
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from "axios";
@@ -11,6 +11,7 @@ const AdminNoticesContent = ({ notices }: { notices: AdminNoticesListDTO }) => {
       .then(res => {
         console.log(res);
         router.push("/admin/notices?page=0");
+        // router.refresh();
       }).catch(err => (
         console.log(err)
       ))
@@ -30,8 +31,8 @@ const AdminNoticesContent = ({ notices }: { notices: AdminNoticesListDTO }) => {
           </div>
         </td>
         <td className="text-center">{notices.title}</td>
-        <td className="text-center">2024-11-11 19:17:24</td>
-        <td className="text-center">4738</td>
+        <td className="text-center">{notices.createDate}</td>
+        <td className="text-center">{notices.viewCount}</td>
         <td className="text-center"><DeleteIcon onClick={() => deleteNotices()} /></td>
       </tr>
     </>

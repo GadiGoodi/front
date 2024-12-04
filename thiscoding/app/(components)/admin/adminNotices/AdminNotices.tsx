@@ -3,7 +3,7 @@ import AdminNoticesContent from "./AdminNoticesContent";
 import Link from "next/link";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { AdminNoticesListDTO } from "@/app/(models)/admin/adminNotices/adminNoticesListDTO";
+import { AdminNoticesListDTO } from "@/app/(models)/admin/adminNotices/AdminNoticesListDTO";
 const AdminNotices = () => {
 
   const [NoticesList, setNoticesList] = useState<Array<AdminNoticesListDTO>>([]);
