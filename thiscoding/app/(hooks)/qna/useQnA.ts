@@ -1,11 +1,12 @@
 import qnaApi from "@/app/(apis)/qna/qnaApi";
+import { QnaListType } from "@/app/(models)/qna/QnaListType";
 import { url } from "inspector";
 import { useRef, useState } from "react";
 import Swal from "sweetalert2"
 const useQnA = () => {
 
   //QnA Api
-  const { postQnA, urlImage } = qnaApi();
+  const { postQnA, urlImage, getQnA } = qnaApi();
 
   //QnA 작성 데이터 state
   const [image, setImage] = useState('')
@@ -14,6 +15,8 @@ const useQnA = () => {
   const [content, setContent] = useState(" ");
   const [markDown, setMarkDown] = useState(" ");
 
+  const [qnaList, setQnaList] = useState<Array<QnaListType>>([])
+
 
   //QnA 작성 데이터
   const data = {
@@ -21,6 +24,14 @@ const useQnA = () => {
     title: title,
     content: content,
     image: image
+  }
+
+
+  //QnA 전체 조회
+  const getQnaList = async () => {
+    const result = await getQnA();
+    console.log(result);
+    setQnaList(result);
   }
 
   //QnA 작성
@@ -40,8 +51,8 @@ const useQnA = () => {
   }
 
   return {
-    content, image, setMarkDown, data, markDown,
-    setLanguage, setTitle, setContent,
+    content, image, setMarkDown, data, markDown, qnaList,
+    setLanguage, setTitle, setContent, getQnaList,
     setImage, createQnA, getUrlImage
   }
 

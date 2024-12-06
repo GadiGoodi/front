@@ -1,10 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QnAContent from "./QnAContent";
 import Link from "next/link";
+import useQnA from "@/app/(hooks)/qna/useQnA";
 
 const QnA = () => {
+
+  const { getQnaList, qnaList } = useQnA();
+
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
   const [selectedIndexQnA, setSelectedIndexQnA] = useState<number | null>(0);
+
+  useEffect(() => {
+    getQnaList();
+  }, [])
 
   const handleClick = (index: number) => {
     setSelectedIndex(index);
@@ -85,16 +93,14 @@ const QnA = () => {
             <div className="w-[250] h-[230] border border-[#EBEBEB] shadow-xl rounded-lg pt-3 pl-3 mb-5">실시간 인기 검색어</div>
             <div className="w-[250] h-[340] border border-[#EBEBEB] shadow-xl rounded-lg pt-3 pl-3">인기 답변 TOP 10</div>
           </div>
-          <div>
-            <div className="border-t border-0.5 border-black w-full" />
-            <QnAContent />
-            <QnAContent />
-            <QnAContent />
-            <QnAContent />
-            <QnAContent />
-            <QnAContent />
-            <QnAContent />
-            <QnAContent />
+          <div className="cursor-pointer">
+            <div className="border-t border-0.5 border-black w-full " />
+            {qnaList?.map(qna => (
+              <QnAContent
+                key={qna.id}
+                qna={qna}
+              />
+            ))}
           </div>
         </div>
       </div>
