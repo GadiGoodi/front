@@ -1,12 +1,12 @@
 import { PiSirenFill } from "react-icons/pi";
 import ReplyIcon from '@mui/icons-material/Reply';
 import { Dispatch, SetStateAction } from "react";
+import useQnA from "@/app/(hooks)/qna/useQnA";
 
 
-const Reply = ({ setIsReply, setPostTagReply, toggleTagReply, postTagReply, PostReplyHandler }
-  : { setIsReply: Dispatch<SetStateAction<boolean>>, setPostTagReply: Dispatch<SetStateAction<boolean>>, toggleTagReply: () => void, postTagReply: boolean, PostReplyHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void }) => {
+const Reply = () => {
 
-
+  const { setPostTagReply, setIsReply, isReply, postTagReply, PostReplyHandler } = useQnA();
 
 
   return (
@@ -26,14 +26,14 @@ const Reply = ({ setIsReply, setPostTagReply, toggleTagReply, postTagReply, Post
             <button>
               <PiSirenFill className="text-[#FC7373] !text-xl" />
             </button>
-            <button onClick={() => setPostTagReply(true)}>
+            <button onClick={() => setPostTagReply(!postTagReply)}>
               <ReplyIcon className='!text-xl mb-1' />
             </button>
           </div>
         </div>
         <div className="ml-[44]">
           <div>오류 메세지도 같이 올려주시면 문제 해결에 더 수월할것 같아요.</div>
-          <button onClick={() => setIsReply(true)} className='flex my-3'>
+          <button onClick={() => setIsReply(!isReply)} className='flex my-3'>
             - 답글 n개 더보기
           </button>
           {postTagReply === true ?

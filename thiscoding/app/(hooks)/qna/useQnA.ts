@@ -1,12 +1,11 @@
 import qnaApi from "@/app/(apis)/qna/qnaApi";
+import { QnaDetailType } from "@/app/(models)/qna/QnaDetailType";
 import { QnaListType } from "@/app/(models)/qna/QnaListType";
-import { url } from "inspector";
-import { useRef, useState } from "react";
-import Swal from "sweetalert2"
+import { useState } from "react";
 const useQnA = () => {
 
   //QnA Api
-  const { postQnA, urlImage, getQnA } = qnaApi();
+  const { postQnA, urlImage, getQnA, getQnaDetail, postComment } = qnaApi();
 
   //QnA 작성 데이터 state
   const [image, setImage] = useState('')
@@ -16,7 +15,37 @@ const useQnA = () => {
   const [markDown, setMarkDown] = useState(" ");
 
   const [qnaList, setQnaList] = useState<Array<QnaListType>>([])
+  const [qnaDetail, setQnaDetail] = useState<QnaDetailType>()
 
+  const [isComment, setIsComment] = useState(false);
+  const [Comment, setComment] = useState([]);
+  const [isReply, setIsReply] = useState(false);
+  const [postTagReply, setPostTagReply] = useState(false);
+  const [postTagComment, setPostTagComment] = useState(false);
+  const [commentContent, setCommentContent] = useState<string>('');
+  const [replyContent, setReplyContent] = useState<string>('');
+
+
+  const toggleIsComment = () => {
+    setIsComment(!isComment);
+  }
+
+  const toggleTagReply = () => {
+    setPostTagReply(!postTagReply);
+  }
+
+  const ReplyHandler = () => {
+    setIsReply(!isReply);
+  }
+
+  const PostCommentHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCommentContent(e.target.value);
+    //댓글 작성 api
+  };
+  const PostReplyHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setReplyContent(e.target.value);
+    //댓글 작성 api
+  };
 
   //QnA 작성 데이터
   const data = {
@@ -26,6 +55,9 @@ const useQnA = () => {
     image: image
   }
 
+  /* 
+  API 호출 부분
+  */
 
   //QnA 전체 조회
   const getQnaList = async () => {
@@ -34,12 +66,17 @@ const useQnA = () => {
     setQnaList(result);
   }
 
+  const fetchQnaDetail = async (id: number) => {
+    const result = await getQnaDetail(id);
+    console.log(result);
+    setQnaDetail(result);
+  }
+
   //QnA 작성
   const createQnA = async () => {
     const result = await postQnA(data);
     console.log(data);
     return result;
-
 
   }
 
@@ -50,10 +87,18 @@ const useQnA = () => {
     return result;
   }
 
+
+  const createComment = async (id: number) => {
+    const result = await postComment(id, commentContent);
+    setComment(result);
+  }
+
+
   return {
-    content, image, setMarkDown, data, markDown, qnaList,
-    setLanguage, setTitle, setContent, getQnaList,
-    setImage, createQnA, getUrlImage
+    createComment, PostCommentHandler, PostReplyHandler, content, image, setPostTagReply, toggleIsComment, isComment, setMarkDown, data, markDown, qnaList, qnaDetail, postTagComment, toggleTagReply,
+    setPostTagComment, ReplyHandler, isReply, postTagReply,
+    setLanguage, setTitle, setContent, getQnaList, setIsReply,
+    setImage, createQnA, getUrlImage, fetchQnaDetail
   }
 
 }
