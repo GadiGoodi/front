@@ -1,4 +1,4 @@
-export interface QnaListType {
+export interface QnaDetailType {
   id: number,
   userId: string,
   language: string,
@@ -8,4 +8,5 @@ export interface QnaListType {
   answerCount: number,
   isSelected: boolean,
   createDate: string,
+  commentCount: number,
 }

@@ -46,6 +46,16 @@ const qnaApi = () => {
     }]
   };
 
+  const getQnaDetail = (id: number) => {
+    const result = axios.get(`http://localhost:8080/api/qna/${id}`)
+      .then(res => {
+        return res.data;
+      }).catch(err => (
+        console.log(err)
+      ))
+    return result;
+  }
+
   const postQnA = (data: any) => {
     const result = axios.post(`http://localhost:8080/api/qna`, data)
       .then(res => {
@@ -71,8 +81,19 @@ const qnaApi = () => {
     ;
   }
 
+  const postComment = (id: number, comment: string) => {
+    const result = axios.post(`http://localhost:8080/api/qna/${id}/reply`, comment)
+      .then(res => {
+        return res.data;
+      }).catch(err => (
+        console.log(err)
+      ))
+    return result;
+  }
+
+
   return {
-    postQnA, urlImage, getQnA
+    postQnA, urlImage, getQnA, getQnaDetail, postComment
   }
 }
 export default qnaApi;

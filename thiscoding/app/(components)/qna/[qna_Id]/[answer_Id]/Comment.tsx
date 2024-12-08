@@ -1,15 +1,16 @@
 import { PiSirenFill } from "react-icons/pi";
 import ReplyIcon from '@mui/icons-material/Reply';
-import { Dispatch, SetStateAction } from "react";
 import SendIcon from '@mui/icons-material/Send';
+import useQnA from "@/app/(hooks)/qna/useQnA";
+import Reply from "./Reply";
 
 // interface ReplyType {
 //   setIsReply: Dispatch<SetStateAction<boolean>>;
 //   setPostTagReply: Dispatch<SetStateAction<boolean>>;
 // }
-const Comment = ({ setIsReply, setPostTagComment, toggleTagReply, postTagComment, PostReplyHandler }
-  : { setIsReply: Dispatch<SetStateAction<boolean>>, setPostTagComment: Dispatch<SetStateAction<boolean>>, toggleTagReply: () => void, postTagComment: boolean, PostReplyHandler: (e: React.ChangeEvent<HTMLTextAreaElement>) => void }) => {
+const Comment = () => {
 
+  const { setPostTagComment, setIsReply, isReply, postTagComment, PostReplyHandler, } = useQnA();
 
 
   return (
@@ -28,13 +29,13 @@ const Comment = ({ setIsReply, setPostTagComment, toggleTagReply, postTagComment
             <button>
               <PiSirenFill className="text-[#FC7373] !text-xl" />
             </button>
-            <button onClick={() => setPostTagComment(true)}>
+            <button onClick={() => setPostTagComment(!postTagComment)}>
               <ReplyIcon className='!text-xl mb-1' />
             </button>
           </div>
         </div>
         <div>오류 메세지도 같이 올려주시면 문제 해결에 더 수월할것 같아요.</div>
-        <button onClick={() => setIsReply(true)} className='flex my-3'>
+        <button onClick={() => setIsReply(!isReply)} className='flex my-3'>
           - 답글 n개 더보기
         </button>
         {postTagComment === true ?
@@ -45,6 +46,13 @@ const Comment = ({ setIsReply, setPostTagComment, toggleTagReply, postTagComment
             </button>
           </div>
           : <></>}
+        {isReply === true ?
+          <>
+            <Reply />
+          </>
+          :
+          <></>
+        }
       </div>
     </>
   )
