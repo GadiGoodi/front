@@ -21,7 +21,7 @@ import Reply from "@/app/(components)/qna/[qna_Id]/[answer_Id]/Reply"
 const QnADetail = () => {
   const params = useParams();
 
-  const { fetchQnaDetail, qnaDetail, createComment, toggleIsComment, isComment, PostCommentHandler, isReply, postTagReply } = useQnA();
+  const { fetchQnaDetail, commentList, fetchComment, qnaDetail, createComment, toggleIsComment, isComment, PostCommentHandler, isReply, postTagReply } = useQnA();
 
   const [isBookMark, setIsBookMark] = useState(false);
   const [isReport, setIsReport] = useState(false);
@@ -78,7 +78,7 @@ const QnADetail = () => {
           </div>
           <div className="flex justify-start items-center mx-[50] mt-8 w-[900]">{qnaDetail?.content}</div>
           <div className="flex w-[1100] justify-between mx-[50] absolute bottom-5">
-            <button onClick={() => toggleIsComment()} className="flex justify-center items-center gap-2"><IoChatbubbleEllipsesSharp className="!text-2xl" />{qnaDetail?.commentCount}</button>
+            <button onClick={() => { toggleIsComment(); fetchComment(Number(params.qna_Id)) }} className="flex justify-center items-center gap-2"><IoChatbubbleEllipsesSharp className="!text-2xl" />{qnaDetail?.commentCount}</button>
             <div className='flex'>
               <div onClick={() => postAnswer()} className='w-[75px] h-[45px] shadow-xl bg-[#0095E8] mr-5 text-white flex justify-center items-center rounded-2xl border text-sm border-[#D0D0D0]'>답변 작성</div>
               <Link href="/qna">
@@ -90,20 +90,18 @@ const QnADetail = () => {
         {isComment === true && isReply === false &&
           <div className="w-[1200] h-auto mb-10 flex-col bg-white rounded-md mt-12">
             <div className="flex-col justify-between mb-7 mx-[50] pt-9">
-              <div>댓글<span className="text-[#0095E8] ml-1">28</span></div>
+              <div>댓글<span className="text-[#0095E8] ml-1">{commentList?.length}</span></div>
               <textarea onChange={(e) => PostCommentHandler(e)} className="resize-none w-full border border-[#D0D0D0] bg-[#EBEBEB] rounded-lg h-24 flex justify-start items-start" placeholder="작성할 댓글의 내용을 입력해주세요." />
               <button className="flex justify-end w-full" onClick={() => createComment(Number(params.qna_Id))}>
                 <SendIcon />
               </button>
             </div>
             <>
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
-              <Comment />
+              {commentList?.map(comment => (
+                <Comment
+                  key={comment.id}
+                  comment={comment} />
+              ))}
             </>
           </div>
         }
@@ -144,7 +142,7 @@ const QnADetail = () => {
           <></>
         }
       </div>
-    </div>
+    </div >
   )
 }
 export default QnADetail;
