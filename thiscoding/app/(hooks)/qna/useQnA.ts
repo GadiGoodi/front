@@ -1,11 +1,12 @@
 import qnaApi from "@/app/(apis)/qna/qnaApi";
+import { QnaCommentType } from "@/app/(models)/qna/QnaCommentType";
 import { QnaDetailType } from "@/app/(models)/qna/QnaDetailType";
 import { QnaListType } from "@/app/(models)/qna/QnaListType";
 import { useState } from "react";
 const useQnA = () => {
 
   //QnA Api
-  const { postQnA, urlImage, getQnA, getQnaDetail, postComment } = qnaApi();
+  const { postQnA, urlImage, getQnA, getQnaDetail, getComment, postComment } = qnaApi();
 
   //QnA 작성 데이터 state
   const [image, setImage] = useState('')
@@ -19,12 +20,12 @@ const useQnA = () => {
 
   const [isComment, setIsComment] = useState(false);
   const [Comment, setComment] = useState([]);
+  const [commentList, setCommentList] = useState<Array<QnaCommentType>>([]);
   const [isReply, setIsReply] = useState(false);
   const [postTagReply, setPostTagReply] = useState(false);
   const [postTagComment, setPostTagComment] = useState(false);
   const [commentContent, setCommentContent] = useState<string>('');
   const [replyContent, setReplyContent] = useState<string>('');
-
 
   const toggleIsComment = () => {
     setIsComment(!isComment);
@@ -87,6 +88,10 @@ const useQnA = () => {
     return result;
   }
 
+  const fetchComment = async (id: number) => {
+    const result = await getComment(id);
+    setCommentList(result);
+  }
 
   const createComment = async (id: number) => {
     const result = await postComment(id, commentContent);
@@ -97,8 +102,8 @@ const useQnA = () => {
   return {
     createComment, PostCommentHandler, PostReplyHandler, content, image, setPostTagReply, toggleIsComment, isComment, setMarkDown, data, markDown, qnaList, qnaDetail, postTagComment, toggleTagReply,
     setPostTagComment, ReplyHandler, isReply, postTagReply,
-    setLanguage, setTitle, setContent, getQnaList, setIsReply,
-    setImage, createQnA, getUrlImage, fetchQnaDetail
+    setLanguage, setTitle, setContent, getQnaList, setIsReply, fetchComment,
+    setImage, createQnA, getUrlImage, fetchQnaDetail, commentList,
   }
 
 }
