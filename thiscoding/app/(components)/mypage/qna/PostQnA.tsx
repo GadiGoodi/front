@@ -1,8 +1,19 @@
 import Link from "next/link";
 import "@/app/globals.css"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PostQnAContent from "./PostQnAContent";
+import usePostQna from "@/app/(hooks)/mypage/post-qna/usePostQna";
+import { useParams } from "next/navigation";
 const PostQnA = () => {
+
+  const params = useParams();
+
+  const { fetchQnaList, postQnaList } = usePostQna();
+
+  useEffect(() => {
+    // fetchQnaList(Number(params.qna_Id))
+    fetchQnaList(1)
+  }, [])
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
 
@@ -31,10 +42,12 @@ const PostQnA = () => {
           </Link>
         </div>
         <div className="border-b border-black mx-[50]" />
-        <PostQnAContent />
-        <PostQnAContent />
-        <PostQnAContent />
-        <PostQnAContent />
+        {postQnaList.map(qna => (
+          <PostQnAContent
+            key={qna.id}
+            qna={qna}
+          />
+        ))}
       </div>
     </>
   )
