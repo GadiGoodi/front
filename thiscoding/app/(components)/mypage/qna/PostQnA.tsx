@@ -11,7 +11,7 @@ const PostQnA = () => {
   const { fetchQnaList, postQnaList } = usePostQna();
 
   useEffect(() => {
-    // fetchQnaList(Number(params.qna_Id))
+    // fetchQnaList(Number(params.qna_Id)) << 나중에 memberId로 대체
     fetchQnaList(1)
   }, [])
 

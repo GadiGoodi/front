@@ -1,9 +1,9 @@
-import axios from "axios";
+import { axiosInstance } from "@/app/(hooks)/axiosConfig";
 
 const postQnaApi = () => {
 
   const getQnaList = (id: number) => {
-    const result = axios.get(`http://localhost:8080/api/users/${id}/qna`)
+    const result = axiosInstance.get(`/api/users/${id}/qna`)
       .then(res => {
         return res.data.content;
       }).catch(err => (
