@@ -1,9 +1,9 @@
-import axios from "axios"
+import { axiosInstance } from "@/app/(hooks)/axiosConfig"
 
 const qnaApi = () => {
 
   const getQnA = () => {
-    // const result = axios.get("http://localhost:8080/api/qna")
+    // const result = axiosInstanceInstance.get("/api/qna")
     //   .then(res => {
     //     return res.data;
     //   }).catch(err => (
@@ -47,7 +47,7 @@ const qnaApi = () => {
   };
 
   const getQnaDetail = (id: number) => {
-    const result = axios.get(`http://localhost:8080/api/qna/${id}`)
+    const result = axiosInstance.get(`/api/qna/${id}`)
       .then(res => {
         return res.data;
       }).catch(err => (
@@ -57,7 +57,7 @@ const qnaApi = () => {
   }
 
   const postQnA = (data: any) => {
-    const result = axios.post(`http://localhost:8080/api/qna`, data)
+    const result = axiosInstance.post(`/api/qna`, data)
       .then(res => {
         return res.data;
       }).catch(err => {
@@ -67,7 +67,7 @@ const qnaApi = () => {
   }
 
   const urlImage = (data: FormData) => {
-    const result = axios.post("http://localhost:8080/api/image", data,
+    const result = axiosInstance.post("/api/image", data,
       {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -83,7 +83,7 @@ const qnaApi = () => {
 
   const getComment = (id: number) => {
     const number = id;
-    // const result = axios.get(`http://localhost:8080//api/qna/${id}/reply`)
+    // const result = axiosInstance.get(`/api/qna/${id}/reply`)
     //   .then(res => {
     //     return res.data;
     //   }).catch(err => (
@@ -134,7 +134,7 @@ const qnaApi = () => {
   }
 
   const postComment = (id: number, comment: string) => {
-    const result = axios.post(`http://localhost:8080/api/qna/${id}/reply`, comment)
+    const result = axiosInstance.post(`/api/qna/${id}/reply`, comment)
       .then(res => {
         return res.data;
       }).catch(err => (
