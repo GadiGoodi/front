@@ -16,6 +16,8 @@ import Chatting from './(components)/common/Chatting';
 import Slider from 'react-slick';
 import SignUp from './(components)/common/SignUp';
 import Login from './(components)/common/LogIn';
+import LogIn from './(components)/common/LogIn';
+import FindPassword from './(components)/common/FindPassword';
 
 export default function Home() {
   const top10Items = Array(10).fill(null);
@@ -26,23 +28,14 @@ export default function Home() {
     slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 1,
-    pauseOnHover: true, // 마우스 호버했을때 멈추긴하는데... 하나가 다 보여야 멈춤
+    autoplaySpeed: 0,
+    pauseOnHover: false,
     arrows: false,
-    speed: 5000,
+    speed: 10000,
     cssEase: 'linear',
   };
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentModal, setCurrentModal] = useState<'login' | 'signup'>('login');
-
-  const modalOnOFF = () => {
-    setIsModalOpen(!isModalOpen);
-    setCurrentModal('login');
-  };
-  const toggleModal = () => {
-    setCurrentModal(currentModal === 'login' ? 'signup' : 'login');
-  };
+  const [currentModal, setCurrentModal] = useState<string | null>(null);
 
   return (
     <div>
@@ -82,21 +75,16 @@ export default function Home() {
         <div className="w-[60%] mr-10">
           <span className="text-[#0095E8] font-bold text-2xl">1만명</span>
           <span className="text-2xl">이 THISCODING;과 함께합니다.</span>
-
-          <div className="">
-            <button onClick={modalOnOFF} className="bg-blue-500">
-              모달 테스트....
-            </button>
-          </div>
-
-          {isModalOpen && (
-            <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-              {currentModal === 'login' ? (
-                <Login onClose={modalOnOFF} toggleModal={toggleModal} />
-              ) : (
-                <SignUp onClose={modalOnOFF} toggleModal={toggleModal} />
-              )}
-            </div>
+          {/* <button onClick={() => setCurrentModal('login')}>로그인</button> */}
+          <button onClick={() => setCurrentModal('login')}>로그인</button>
+          {currentModal === 'login' && (
+            <LogIn setCurrentModal={setCurrentModal} />
+          )}
+          {currentModal === 'signup' && (
+            <SignUp setCurrentModal={setCurrentModal} />
+          )}
+          {currentModal === 'find-password' && (
+            <FindPassword setCurrentModal={setCurrentModal} />
           )}
 
           <div className="my-10">
