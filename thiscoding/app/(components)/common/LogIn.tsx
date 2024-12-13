@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-import {
-  NaverLogin,
-  GoogleLogin,
-  KakaoLogin,
-} from '@/app/(components)/common/Social';
+// import {
+//   NaverLogin,
+//   GoogleLogin,
+//   KakaoLogin,
+// } from '@/app/(components)/common/Social';
 import { login as apiLog, apiLogin } from '@/app/(apis)/userApi';
 import { useAuthStore } from '@/app/store/store'; // Zustand store import
 
@@ -170,9 +170,9 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
           </button>
           <div className="text-[#D0D0D0]">SNS계정으로 간편 로그인/회원가입</div>
           <div className="flex space-x-2.5">
-            <NaverLogin />
+            {/* <NaverLogin />
             <GoogleLogin />
-            <KakaoLogin />
+            <KakaoLogin /> */}
           </div>
           <div className="flex space-x-1.5">
             <div className="text-[#D0D0D0]">아직 회원이 아니신가요?</div>
