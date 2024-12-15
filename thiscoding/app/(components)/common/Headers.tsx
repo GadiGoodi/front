@@ -68,8 +68,8 @@ const Headers = () => {
 
         <button onClick={openModal} className="hover:text-[#0095E8]">
           코드방 생성
-          {isModalOpen && <CodingroomsModal />}
         </button>
+          {isModalOpen && <CodingroomsModal />}
 
         <Link href="/qna" className="hover:text-[#0095E8]">
           질문 & 답변
