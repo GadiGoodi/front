@@ -13,8 +13,10 @@ import LogIn from './LogIn';
 import SignUp from './SignUp';
 import FindPassword from './FindPassword';
 import { useAuthStore } from '@/app/store/store';
+import CodingroomsModal from '../codingrooms/CodingroomsModal';
 
 interface User {
+  name: string;
   nickname: string;
   profileImage: string;
 }
@@ -41,7 +43,7 @@ const Headers = () => {
   };
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const openModal = () => setIsModalOpen(!setIsModalOpen);
+  const openModal = () => setIsModalOpen(!isModalOpen);
 
   const handleLogout = () => {
     setUser(null);
@@ -66,6 +68,7 @@ const Headers = () => {
 
         <button onClick={openModal} className="hover:text-[#0095E8]">
           코드방 생성
+          {isModalOpen && <CodingroomsModal />}
         </button>
 
         <Link href="/qna" className="hover:text-[#0095E8]">
