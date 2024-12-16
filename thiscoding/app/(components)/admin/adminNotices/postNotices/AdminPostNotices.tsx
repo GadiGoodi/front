@@ -4,8 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
 const AdminNoticesPost = () => {
-  const { createAdminNotices, AdminNoticesDetail, noticesTitleHandler, noticesContentHandler,
-    selectCategoryHandler, modifyAdminNotices, postNoticesDetail,
+  const { createAdminNotices, AdminNoticesDetail, modifyAdminNotices, postNoticesDetail, setNoticeData,
     noticeData } = useAdmin();
   const params = useSearchParams();
   const noticesId = params.get('notices-Id');
@@ -32,7 +31,14 @@ const AdminNoticesPost = () => {
               <div className="flex-col">
                 <div>카테고리</div>
                 <select
-                  onChange={(e) => selectCategoryHandler(e)}
+                  name="category"
+                  onChange={(e) => {
+                    const { value, name } = e.target;
+                    setNoticeData({
+                      ...noticeData,
+                      [name]: value
+                    });
+                  }}
                   className="border w-[200] h-[40] px-5 py-2 rounded-md shadow-xl" value={postNoticesDetail?.category}>
                   <option value="FAQ">FAQ</option>
                   <option value="개인정보">개인정보</option>
@@ -45,17 +51,31 @@ const AdminNoticesPost = () => {
               <div className="flex-col">
                 <div>제목</div>
                 <input
+                  name="title"
                   defaultValue={postNoticesDetail?.title}
                   className="border w-[500] h-[40] px-5 py-2 rounded-md shadow-xl"
                   type="text"
                   placeholder="제목을 입력해주세요"
-                  onChange={(e) => noticesTitleHandler(e)}
+                  onChange={(e) => {
+                    const { value, name } = e.target;
+                    setNoticeData({
+                      ...noticeData,
+                      [name]: value
+                    });
+                  }}
                 />
               </div>
             </div>
             <textarea
+              name="content"
               defaultValue={postNoticesDetail?.content}
-              onChange={(e) => noticesContentHandler(e)}
+              onChange={(e) => {
+                const { value, name } = e.target;
+                setNoticeData({
+                  ...noticeData,
+                  [name]: value
+                });
+              }}
               cols={40} rows={80} className="w-[720] h-[400] rounded-xl shadow-xl resize-none" />
           </div>
         </div>

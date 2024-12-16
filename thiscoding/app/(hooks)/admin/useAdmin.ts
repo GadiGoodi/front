@@ -5,32 +5,16 @@ import { useState } from 'react';
 const useAdmin = () => {
 
   const [postNoticesDetail, setPostNoticesDetail] = useState<AdminNoticesDetailDTO>();
-  const [noticesTitle, setNoticesTitle] = useState<string>("")
-  const [noticesContent, setNoticesContent] = useState<string>("")
-  const [noticesCategory, setNoticesCategory] = useState<string>("")
+  const defaultNoticeData: NoticePostData = {
+    title: "",
+    content: "",
+    category: "",
+  }
+  const [noticeData, setNoticeData] = useState(defaultNoticeData)
 
 
   const { postAdminNotices, getAdminNoticesDetail, deleteAdminNotices, updateAdminNotices } = AdminApi();
 
-
-  const noticesTitleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNoticesTitle(e.target.value);
-  }
-
-  const noticesContentHandler = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNoticesContent(e.target.value);
-  }
-
-  const selectCategoryHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNoticesCategory(e.target.value);
-  }
-
-
-  const noticeData: NoticePostData = {
-    title: noticesTitle,
-    content: noticesContent,
-    category: noticesCategory,
-  }
 
   const createAdminNotices = async () => {
     const result = await postAdminNotices(noticeData);
@@ -59,7 +43,7 @@ const useAdmin = () => {
   }
 
   return {
-    noticesTitleHandler, modifyAdminNotices, noticesContentHandler, selectCategoryHandler,
+    modifyAdminNotices, setNoticeData,
     createAdminNotices, postNoticesDetail, AdminNoticesDetail, removeAdminNotices,
     noticeData
   }

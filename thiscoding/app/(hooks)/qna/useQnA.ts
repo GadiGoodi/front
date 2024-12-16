@@ -10,10 +10,8 @@ const useQnA = () => {
 
   //QnA 작성 데이터 state
   const [image, setImage] = useState('')
-  const [language, setLanguage] = useState("JavaScript / TypeScript");
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState(" ");
-  const [markDown, setMarkDown] = useState(" ");
+  const [content, setContent] = useState('')
+  const [markDown, setMarkDown] = useState('')
 
   const [qnaList, setQnaList] = useState<Array<QnaListType>>([])
   const [qnaDetail, setQnaDetail] = useState<QnaDetailType>()
@@ -26,6 +24,16 @@ const useQnA = () => {
   const [postTagComment, setPostTagComment] = useState(false);
   const [commentContent, setCommentContent] = useState<string>('');
   const [replyContent, setReplyContent] = useState<string>('');
+
+  //QnA 작성 데이터
+  const defaultQna = {
+    language: "JavaScript / TypeScript",
+    title: "",
+    content: content,
+    image: ""
+  }
+  const [qnaData, setQnaData] = useState(defaultQna);
+
 
   const toggleIsComment = () => {
     setIsComment(!isComment);
@@ -48,13 +56,6 @@ const useQnA = () => {
     //댓글 작성 api
   };
 
-  //QnA 작성 데이터
-  const data = {
-    language: language,
-    title: title,
-    content: content,
-    image: image
-  }
 
   /* 
   API 호출 부분
@@ -75,8 +76,7 @@ const useQnA = () => {
 
   //QnA 작성
   const createQnA = async () => {
-    const result = await postQnA(data);
-    console.log(data);
+    const result = await postQnA(qnaData);
     return result;
 
   }
@@ -100,10 +100,10 @@ const useQnA = () => {
 
 
   return {
-    createComment, PostCommentHandler, PostReplyHandler, content, image, setPostTagReply, toggleIsComment, isComment, setMarkDown, data, markDown, qnaList, qnaDetail, postTagComment, toggleTagReply,
-    setPostTagComment, ReplyHandler, isReply, postTagReply,
-    setLanguage, setTitle, setContent, getQnaList, setIsReply, fetchComment,
-    setImage, createQnA, getUrlImage, fetchQnaDetail, commentList,
+    createComment, PostCommentHandler, PostReplyHandler, content, image, setPostTagReply, toggleIsComment, isComment, qnaList,
+    qnaDetail, postTagComment, toggleTagReply, setMarkDown, markDown,
+    setPostTagComment, ReplyHandler, isReply, postTagReply, getQnaList, setIsReply, fetchComment, setContent,
+    setImage, createQnA, getUrlImage, fetchQnaDetail, commentList, setQnaData, qnaData
   }
 
 }

@@ -3,7 +3,7 @@ import { axiosInstance } from "@/app/(hooks)/axiosConfig"
 const qnaApi = () => {
 
   const getQnA = () => {
-    // const result = axiosInstanceInstance.get("/api/qna")
+    // const result = axiosInstance.get("/api/qna")
     //   .then(res => {
     //     return res.data;
     //   }).catch(err => (
@@ -57,6 +57,7 @@ const qnaApi = () => {
   }
 
   const postQnA = (data: any) => {
+    console.log(data);
     const result = axiosInstance.post(`/api/qna`, data)
       .then(res => {
         return res.data;
