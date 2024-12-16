@@ -13,17 +13,20 @@ import useQnA from "@/app/(hooks)/qna/useQnA";
 
 const ToastUi = ({ editorRef, onChangeEditor }: any) => {
   type HookCallback = (url: string, text?: string) => void
-  const { getUrlImage, setImage, content, image, setContent, setMarkDown } = useQnA();
+  const { getUrlImage, setImage, image, content } = useQnA();
   // const editorRef = useRef<any>(null)
   const toolbarItems = [['heading', 'bold', 'italic', 'strike'],
   ['hr'], ['ul', 'ol', 'task'], ['table', 'link'],
   ['image'], ['code'], ['codeblock'], ['scrollSync']]
 
   const onUploadImage = async (blob: Blob | File, callback: HookCallback) => {
+    const path = "post";
     // blob은 base64 인코딩된 이미지 파일
     const formData = new FormData()
     console.log(blob);
     formData.append('image', blob)
+    formData.append('path', path)
+
     try {
       const imageRes = await getUrlImage(formData);
       const image_URL = imageRes.data.imageURL
