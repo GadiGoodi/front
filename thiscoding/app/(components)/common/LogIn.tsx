@@ -8,12 +8,14 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 // } from '@/app/(components)/common/Social';
 import { login as apiLog, apiLogin } from '@/app/(apis)/userApi';
 import { useAuthStore } from '@/app/store/store'; // Zustand store import
+// import useSignUp from '@/app/(hooks)/useSignUp';
 
 interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
+  // const { handleKeyDown } = useSignUp();
   const { login } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -67,6 +69,7 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
         name: data.nickname,
         email: data.email,
         password: data.password,
+        profileImage: '',
       });
 
       // 로컬 스토리지에 로그인 정보 저장 (비밀번호도 저장해도되나??)
@@ -85,6 +88,7 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
       setError('로그인 실패');
       console?.error('Login failed:', err);
     }
+    window.location.reload();
   };
 
   // 로컬 스토리지에서 로그인 정보 가져오기......
@@ -96,9 +100,17 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
         name: parsedData.name,
         email: parsedData.email,
         password: parsedData.password,
+        profileImage: '',
       });
     }
   }, [login]);
+
+  // 엔터 클릭으로 로그인
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmit(e as any);
+    }
+  };
 
   return (
     <div
@@ -117,7 +129,9 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
             placeholder="이메일"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={handleKeyDown} // Enter 키 감지
           />
+
           {emailError && (
             <p className="text-left text-[#EA4B48] text-sm w-full">
               {emailError}
@@ -130,7 +144,9 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
               placeholder="비밀번호"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown} // Enter 키 감지
             />
+
             {showPassword ? (
               <VisibilityOffOutlinedIcon
                 className="absolute right-3 text-gray-400 cursor-pointer"
