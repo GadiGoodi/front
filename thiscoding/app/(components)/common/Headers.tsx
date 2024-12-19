@@ -69,7 +69,7 @@ const Headers = () => {
         <button onClick={openModal} className="hover:text-[#0095E8]">
           코드방 생성
         </button>
-          {isModalOpen && <CodingroomsModal />}
+        {isModalOpen && <CodingroomsModal />}
 
         <Link href="/qna" className="hover:text-[#0095E8]">
           질문 & 답변
@@ -101,62 +101,59 @@ const Headers = () => {
           <NotificationsNoneOutlinedIcon style={{ fontSize: '30px' }} />
         </button>
 
-        <div>
-          {/* 로그인 상태가 true일 때만 프로필 렌더링 */}
-          {isLoggedIn && user ? (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div
-                onClick={dropDownHandler}
-                className="relative cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <input
-                    className="bg-gray-700 size-10 rounded-full"
-                    type="image"
-                    src={user?.profileImage || '/asset/defaultImage.png'} // user가 있으면 프로필 이미지 사용
-                    alt="프로필 이미지"
-                  />
-                  <span>{user?.name}</span>
-                </div>
-                {profileDropDown && (
-                  <div className="w-[250px] h-[180px] bg-[#EFEFEF] rounded-2xl absolute right-2 top-14 flex-col justify-between items-center z-50">
-                    <div className="border-b h-[70px] ml-4 mt-3">
-                      <div>닉네임</div>
-                      <div className="text-[#666666]">{user?.name}</div>
-                    </div>
-                    <div className="h-[70px] ml-4 mt-3">
-                      <Link href="/mypage" className="hover:text-[#0095E8]">
-                        <div>마이페이지</div>
-                      </Link>
-                      <div>
-                        <DarkModeIcon /> <LightModeIcon /> 다크모드 / 라이트모드
-                      </div>
-                    </div>
-                    <div
-                      onClick={handleLogout}
-                      className="text-[#666666] bg-[#D4D4D4] rounded-b-2xl h-[40px] flex justify-center items-center cursor-pointer"
-                    >
-                      <LogoutIcon />
-                      로그아웃
+        {/* <div> */}
+        {/* 로그인 상태가 true일 때만 프로필 렌더링 */}
+        {isLoggedIn && user ? (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div onClick={dropDownHandler} className="relative cursor-pointer">
+              <div className="flex items-center gap-2">
+                <input
+                  className="bg-gray-700 size-10 rounded-full"
+                  type="image"
+                  src={user?.profileImage || '/asset/defaultImage.png'} // user가 있으면 프로필 이미지 사용
+                  alt="프로필 이미지"
+                />
+                <span>{user?.name}</span>
+              </div>
+              {profileDropDown && (
+                <div className="w-[250px] h-[180px] bg-[#EFEFEF] rounded-2xl absolute right-2 top-14 flex-col justify-between items-center z-50">
+                  <div className="border-b h-[70px] ml-4 mt-3">
+                    <div>닉네임</div>
+                    <div className="text-[#666666]">{user?.name}</div>
+                  </div>
+                  <div className="h-[70px] ml-4 mt-3">
+                    <Link href="/mypage" className="hover:text-[#0095E8]">
+                      <div>마이페이지</div>
+                    </Link>
+                    <div>
+                      <DarkModeIcon /> <LightModeIcon /> 다크모드 / 라이트모드
                     </div>
                   </div>
-                )}
-              </div>
+                  <div
+                    onClick={handleLogout}
+                    className="text-[#666666] bg-[#D4D4D4] rounded-b-2xl h-[40px] flex justify-center items-center cursor-pointer"
+                  >
+                    <LogoutIcon />
+                    로그아웃
+                  </div>
+                </div>
+              )}
             </div>
-          ) : (
-            <button onClick={() => setCurrentModal('login')}>로그인</button>
-          )}
+          </div>
+        ) : (
+          <button onClick={() => setCurrentModal('login')}>로그인</button>
+        )}
 
-          {currentModal === 'login' && (
-            <LogIn setCurrentModal={setCurrentModal} />
-          )}
-          {currentModal === 'signup' && (
-            <SignUp setCurrentModal={setCurrentModal} />
-          )}
-          {currentModal === 'find-password' && (
-            <FindPassword setCurrentModal={setCurrentModal} />
-          )}
-        </div>
+        {currentModal === 'login' && (
+          <LogIn setCurrentModal={setCurrentModal} />
+        )}
+        {currentModal === 'signup' && (
+          <SignUp setCurrentModal={setCurrentModal} />
+        )}
+        {currentModal === 'find-password' && (
+          <FindPassword setCurrentModal={setCurrentModal} />
+        )}
+        {/* </div> */}
       </div>
     </header>
   );
