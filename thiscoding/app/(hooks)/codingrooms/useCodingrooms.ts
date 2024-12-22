@@ -53,9 +53,6 @@ const useCodingrooms = () => {
         swift: "swift",
     };
 
-    // 에디터 언어
-    // const [language, setLanguage] = useState<string>(codingrooms?.language as string);
-
     // 상단 파일 탭 목록
     const [fileTabs, setFileTabs] = useState([
         { fileName: "main", value: codingrooms?.value as string, codeId: codingrooms?.codeId as string }
@@ -403,18 +400,6 @@ const useCodingrooms = () => {
         editorRef.current = editor;
         editor.focus();
     };
-
-    // 언어 패키지 출력
-    // const getPackages = async (): Promise<void> => {
-    //     try {
-    //         const response = await pistonAPI.get("/runtimes");
-    //         console.log("Packages:", response.data);
-    //     } catch (error) {
-    //         console.error("Error fetching packages:", error);
-    //     }
-    // };
-
-    // const [codeData, setCodeData] = useState(defaultCodeData);
 
     // 코드방 입장 시, 데이터 불러와 렌더링
     const renderingCodingrooms = async (uuid: UUID) => {
