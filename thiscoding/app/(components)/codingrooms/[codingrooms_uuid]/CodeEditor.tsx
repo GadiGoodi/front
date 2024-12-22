@@ -1,7 +1,7 @@
 import "@/app/globals.css"
 import Editor from "@monaco-editor/react";
 import { useEffect } from "react";
-import WebSocketService from "../../../(apis)/codingrooms/codingroomsWebSocket"
+import WebSocketService from "../../../(apis)/codingrooms/codingroomsWebSocket";
 
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
