@@ -1,7 +1,7 @@
 import "@/app/globals.css"
-import Editor, { OnChange } from "@monaco-editor/react";
-import { useEffect, useRef, useState } from "react";
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+import Editor from "@monaco-editor/react";
+import { useEffect } from "react";
+import WebSocketService from "../../../(apis)/codingrooms/codingroomsWebSocket";
 
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
@@ -25,379 +25,130 @@ import HeadsetMicIcon from "@mui/icons-material/HeadsetMic";
 import HeadsetOffIcon from "@mui/icons-material/HeadsetOff";
 import ToggleOnIcon from "@mui/icons-material/ToggleOn";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
-import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
-import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import SendIcon from "@mui/icons-material/Send";
 
 import Link from "next/link";
-import axios from "axios";
+import { useParams } from 'next/navigation';
+import useCodingrooms from "@/app/(hooks)/codingrooms/useCodingrooms";
+import { UUID } from "crypto";
 
 const CodeEditor: React.FC = () => {
-    // 언어 별 초기 값
-    const codeSnippets: Readonly<Record<string, string>> = {
-        javascript: `/* JavaScript */\n\nconsole.log("Hello, World!")`,
-        typescript: `/* TypeScript */\n\nconsole.log("Hello, World!")`,
-        python: `# Python\n\nprint("Hello, World!")`,
-        c: `/* C */\n#include <stdio.h>\n\nint main(int argc, char *argv[])\n{\n\tprintf("Hello, World!");\n\n\treturn 0;\n}`,
-        cpp: `/* C++ */\n#include <iostream>\n\nusing namespace std;\n\nint main()\n{\n\tcout << "Hello, World!" << endl;\n\n\treturn 0;\n}`,
-        csharp: `/* C# */\nusing System;\n\nclass HelloWorld {\n\tstatic void Main() {\n\t\tConsole.WriteLine("Hello, World!");\n\t}\n}`,
-        java: `/* Java */\n\nclass Main {\n\tstatic public void main(String []args) {\n\t\tSystem.out.println("Hello, World!");\n\t}\n}`,
-        ruby: `# Ruby\n\nputs "Hello, World!"`,
-        go: `/* Go */\n\npackage main\n\nimport (\n\t"fmt"\n)\n\nfunc main() {\n\tfmt.Println("Hello, World!")\n}`,
-        swift: `// Swift\n\nprint("Hello, World!")`
-    };
+    const {
+        codingrooms, //, setCodingrooms,
+        languageVersions, languageExtensions,
+        fileTabs, setFileTabs,
+        activeFileTab, setActiveFileTab,
+        isTabChanged, setIsTabChanged,
+        editingFileTabIndex, setEditingFileTabIndex,
+        tmpFileTabName, setTmpFileTabName,
+        fileTabEditRef,
+        output, setOutput,
+        selectedLeftIndex, setSelectedLeftIndex,
+        selectedRightIndex, setSelectedRightIndex,
+        pistonAPI,
+        isCompiling, setIsCompiling,
+        themeMode, setThemeMode,
+        fileInputRef,
+        isMicOn, setIsMicOn,
+        isHeadsetOn, setIsHeadsetOn,
+        isVoiceOn, setIsVoiceOn,
+        editorRef,
+        handleEditorChange,
+        handleTabClick,
+        handleAddFileTab,
+        handleRemoveFile,
+        handleFileTabDoubleClick,
+        checkInvalidChars,
+        changeFileTabName,
+        closeFileTabInput,
+        handleLeftTab,
+        handleRightTab,
+        executeCode,
+        handleRunCode,
+        saveEditedCode,
+        handleFileUpload,
+        handleFileChange,
+        copyLinkToClipboard,
+        handleCopyClick,
+        handleTheme,
+        toggleMic,
+        toggleHeadset,
+        toggleVoice,
+        onMount,
+        renderingCodingrooms
+    } = useCodingrooms();
 
-    const languageVersions: Readonly<Record<string, string>> = {
-        javascript: "18.15.0",
-        typescript: "5.0.3",
-        python: "3.10.0",
-        c: "10.2.0",
-        cpp: "10.2.0",
-        csharp: "6.12.0",
-        java: "15.0.2",
-        ruby: "3.0.1",
-        go: "1.16.2",
-        swift: "5.3.3",
-    };
+    const params = useParams();
 
-    // 에디터 언어
-    // DB의 코드방 테이블에서 언어 컬럼 값 받아와야 함
-    const [language, setLanguage] = useState<string>("swift");
+    // 최초 렌더링 직후 호출
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                const result = await renderingCodingrooms(params.codingrooms_uuid as UUID);
 
-    // 상단 파일 탭 목록 (임시)
-    // 저장하는 경우는 DB에서 관리
-    // 초기 상태에서 최소 1개의 파일 탭은 유지하도록 설정
-    // 1개의 파일 탭은 main.확장자 명으로 고정
-    const [fileTabs, setFileTabs] = useState([
-        { name: "main.js", content: codeSnippets[language] }
-    ]);
-
-    // 파일 탭 이름 뒤에 붙을 숫자
-    const [fileTabNum, setFileTabNum] = useState<number>(0);
-
-    // 활성화된 파일 탭
-    // 초기값은 files 배열의 0번째 값
-    const [activeFileTab, setActiveFileTab] = useState(fileTabs[0]);
-
-    // 이름을 변경할 파일 탭 요소 번호
-    const [editingFileTabIndex, setEditingFileTabIndex] = useState<number | null>(null);
-
-    // 파일 탭 이름 임시 변경 값
-    const [tmpFileTabName, setTmpFileTabName] = useState<string>("");
-
-    // input 훅 관리
-    const fileTabEditRef = useRef<HTMLInputElement>(null);
-
-    // 컴파일 및 출력 값
-    const [output, setOutput] = useState<string>("");
-
-    // 왼쪽 탭 인덱스
-    // number 타입 or null 값
-    const [selectedLeftIndex, setSelectedLeftIndex] = useState<number | null>(null);
-
-    // 오른쪽 탭 인덱스
-    // number 타입 or null 값
-    const [selectedRightIndex, setSelectedRightIndex] = useState<number | null>(null);
-
-    // 컴파일 상태 값
-    // 컴파일 상태인지 아닌지 판단
-    // 실행 버튼 및 에디터 활성화 여부
-    const [isCompiling, setIsCompiling] = useState<boolean>(false);
-
-    // 테마 변수
-    // 기본 다크모드 false
-    const [themeMode, setThemeMode] = useState<boolean>(false);
-
-    // 파일 입력 요소의 참조를 생성
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-    // 마이크 토글
-    const [isMicOn, setIsMicOn] = useState<boolean>(false);
-
-    // 헤드셋 토글
-    const [isHeadsetOn, setIsHeadsetOn] = useState<boolean>(false);
-
-    // 음성 채팅 토글
-    const [isVoiceOn, setIsVoiceOn] = useState<boolean>(false);
-
-    // 에디터 참조 훅
-    // IStandaloneCodeEditor는 Monaco Editor의 인스턴스를 나타내는 타입
-    const editorRef = useRef<editor.IStandaloneCodeEditor>();
-
-    // pistonAPI
-    const pistonAPI = axios.create({
-        baseURL: "https://emkc.org/api/v2/piston",
-    });
-
-    // 코드 변경 감지 핸들러
-    const handleEditorChange: OnChange = (value) => {
-        // 활성화된 파일의 코드 변경
-        setActiveFileTab({ ...activeFileTab, content: value || "" });
-
-        // map은 배열을 순회하면서 각 항목을 변환한 새 배열을 반환
-        // f는 files 배열의 각 요소
-        // 즉, 활성화된 탭에 변경된 값인 value를 실제 fileTabs의 값에 복붙저장
-        setFileTabs(fileTabs.map(f => f.name === activeFileTab.name ? { ...f, content: value || "" } : f));
-    };
-
-    // 파일 탭 클릭 핸들러
-    const handleTabClick = (file: { name: string; content: string }) => {
-        setActiveFileTab(file);
-    };
-
-    // 파일 탭 추가 핸들러
-    const handleAddFileTab = () => {
-        const netFileTabName = `noname${fileTabNum + 1}.js`; // 파일 이름 자동 생성
-        const newFileTab = { name: netFileTabName, content: codeSnippets[language] };
-        setFileTabs([...fileTabs, newFileTab]); // 새 파일 요소 추가
-        setActiveFileTab(newFileTab); // 새 파일을 활성화
-        setFileTabNum(fileTabNum + 1); // 파일 번호 증가
-    };
-
-    // 파일 탭 닫기 핸들러
-    const handleRemoveFile = (fileTabName: string, index: number) => {
-        // 파일 탭이 하나일 경우 닫을 수 없도록 처리
-        if (fileTabs.length <= 1) {
-            return; // 최소 1개의 파일 탭은 남도록
-        }
-
-        // 파일 탭 배열 초기화
-        // filter()는 주어진 조건에 해당되는 요소만 반환
-        // 즉, fileTabName과 일치하는 요소는 제거
-        setFileTabs(fileTabs.filter(f => f.name !== fileTabName));
-
-        // 활성화된 파일 탭 초기화
-        // 만약 활성화된 탭을 닫으려고 한다면
-        setFileTabs((prevFileTabs) => {
-            // 업데이트된 파일 탭 배열
-            const updatedFileTabs = prevFileTabs.filter((f) => f.name !== fileTabName);
-
-            // 활성화된 탭을 닫으려 한다면
-            if (activeFileTab.name === fileTabName) {
-                // 마지막 탭이면 index-1번째, 아니라면 index번째
-                const newIndex = (index === fileTabs.length - 1 ? index - 1 : index);
-                // 해당 인덱스 탭으로 새로이 set
-                setActiveFileTab(updatedFileTabs[newIndex] || { name: "", content: "" });
+                // codingrooms 데이터가 로드된 후 fileTabs 초기화
+                const initialTab = { fileName: "main", value: result?.value, codeId: result?.codeId || "" };
+                setFileTabs([initialTab]);
+                setActiveFileTab(initialTab);
+            } catch (error) {
+                console.error("Error fetching data:", error);
             }
+        };
 
-            return updatedFileTabs; // 새 배열 반환
-        });
-    };
+        loadData();
+    }, []);
+    // }, [params.codingrooms_uuid]);
 
-    // 파일 탭 이름을 편집 모드로 전환
-    const handleFileTabDoubleClick = (index: number) => {
-        setEditingFileTabIndex(index);  // 해당 탭을 편집 모드로 설정
-        setTmpFileTabName(fileTabs[index].name.split(".")[0]); // 변경 중인 파일 명에 대한 초기의 값을 현재 파일 명으로 설정
-    };
-
-    // 파일 명에서 유효하지 않은 기호 검사 함수
-    // \ / : * ? " < > | 포함하는지 확인
-    const checkInvalidChars = (char: string): boolean => {
-        const invalidCharsPattern = /[\\\/:*?"<>|]/;
-        return invalidCharsPattern.test(char);
-    };
-
-    // 키보드 이벤트 처리 (onKeyDown에서 Enter키를 눌렀을 때)
-    // 파일 탭 이름 변경
-    const changeFileTabName = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-        // 엔터를 누를 경우
-        if (e.key === "Enter") {
-            // index번째(현재) 탭의 값과, tmpFileTabName 값이 같을 경우
-            // 즉, 파일명을 변경하지 않은 경우
-            if (fileTabs[index].name === `${tmpFileTabName}.js`) {
-                closeFileTabInput();
-                return;
-            }
-
-            // some은 조건을 만족할 경우 true 반환
-            // 중복되는 파일명이 있을 경우
-            if (fileTabs.some(f => f.name === `${tmpFileTabName}.js`)) {
-                alert("파일명이 중복됩니다.");
-                closeFileTabInput();
-                return;
-            }
-
-            // 유효하지 않은 기호를 포함한 경우 true 반환
-            // \ / : * ? " < > | 사용 불가
-            if (checkInvalidChars(tmpFileTabName)) {
-                alert("파일명을 확인해주세요.");
-                closeFileTabInput();
-                return;
-            }
-
-            // 업데이트할 파일 탭 배열에 원본 파일 탭 배열 복붙
-            const updatedFileTabs = [...fileTabs];
-            // index번째의 name 값을 초기화
-            updatedFileTabs[index].name = `${tmpFileTabName}.js`;
-            // fileTabs에 업데이트된 배열을 통째로 set
-            setFileTabs(updatedFileTabs);
-            closeFileTabInput();
-            setTmpFileTabName("");
-        }
-    };
-
-    // 파일 탭 이름 편집 모드 종료
-    // input 태그가 포커스를 잃을 때 호출하는 함수 or 종료하고 싶을 때 호출
-    const closeFileTabInput = () => {
-        setTmpFileTabName(""); // 임시 파일명 초기화
-        setEditingFileTabIndex(null);  // 편집 종료
-    };
-
-    // 왼쪽 탭 메뉴 핸들
-    const handleLeftTab = (index: number) => {
-        if (index === selectedLeftIndex) {
-            setSelectedLeftIndex(null);
-        } else {
-            setSelectedLeftIndex(index);
-        }
-    };
-
-    // 오른쪽 탭 메뉴 핸들
-    const handleRightTab = (index: number) => {
-        if (index === selectedRightIndex) {
-            setSelectedRightIndex(null);
-        } else {
-            setSelectedRightIndex(index);
-        }
-    };
-
-    // 테마 전환
-    const handleTheme = () => {
-        setThemeMode((prev) => !prev);
-    };
-
-    // 링크 복사 함수
-    const copyLinkToClipboard = async (url: string) => {
-        try {
-            await navigator.clipboard.writeText(url); // 클립보드에 텍스트 복사
-            alert("링크가 복사되었습니다!");
-        } catch (error) {
-            console.error("링크 복사 실패:", error);
-            alert("링크 복사에 실패했습니다.");
-        }
-    };
-
-    // 링크 복사 핸들
-    // 클릭한 요소(event.target)에서 텍스트를 읽어와 클립보드에 복사
-    const handleCopyClick = (event: React.MouseEvent) => {
-        const pElement = event.target as HTMLElement; // 클릭한 요소를 가져옴
-        if (pElement && pElement.innerText) {
-            copyLinkToClipboard(pElement.innerText); // <p> 태그의 텍스트를 전달
-        }
-    };
-
-    // 파일 가져오기 시, 파일 입력 요소 클릭을 트리거하는 함수
-    const handleFileUpload = () => {
-        fileInputRef.current?.click();
-    };
-
-    // 파일 가져오기에서 파일 선택 시, 처리할 함수를 작성
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files && event.target.files.length > 0) {
-            const file = event.target.files[0];
-            console.log("Selected file:", file);
-        }
-    };
-
-    // 마이크 토글
-    const toggleMic = () => {
-        setIsMicOn((prev) => !prev);
-    };
-
-    // 헤드셋 토글
-    const toggleHeadset = () => {
-        setIsHeadsetOn((prev) => !prev);
-    };
-
-    // 음성 채팅 토글
-    const toggleVoice = () => {
-        setIsVoiceOn((prev) => !prev);
-    };
-
-    // Monaco Editor onMount
-    const onMount = (editor: editor.IStandaloneCodeEditor) => {
-        editorRef.current = editor;
-        editor.focus();
-    };
-
-    // 코드 컴파일
-    const executeCode = async (sourceCode: string) => {
-        const response = await pistonAPI.post("/execute", {
-            language: language,
-            version: languageVersions[language],
-            files: [
-                {
-                    content: sourceCode
-                }
-            ],
-        })
-
-        return response.data;
-    };
-
-    // 언어 패키지 출력
-    const getPackages = async (): Promise<void> => {
-        try {
-            const response = await pistonAPI.get("/runtimes");
-            console.log("Packages:", response.data);
-        } catch (error) {
-            console.error("Error fetching packages:", error);
-        }
-    };
-
-    // 실행 버튼 함수
-    const handleRunCode = async () => {
-        // 실행 버튼 및 에디터 비활성화
-        setIsCompiling(true);
-
-        const sourceCode = activeFileTab.content;
-        if (!sourceCode) {
-            setIsCompiling(false);
+    // codingrooms 값 변경 시 동작 (코드방 입장 시)
+    useEffect(() => {
+        // codingrooms가 undefined일 경우 (상태 미반영)
+        if (!codingrooms) {
             return;
         }
 
-        try {
-            const { run: result } = await executeCode(sourceCode);
+        // 소켓 연결
+        WebSocketService.connect("http://localhost:8080/ws", codingrooms?.roomId as number, codingrooms?.codeId as string, (value: string) => {
+            // 활성화 탭의 코드 변경
+            setActiveFileTab({ ...activeFileTab, value: value || "" });
 
-            // 정상적으로 컴파일된 경우
-            // stdout의 값이 공백이 아닐 경우 (길이가 0이 아님)
-            if (result.stdout.trim().length !== 0) {
-                setOutput(result.stdout);
-                alert("컴파일을 성공했습니다.");
-            } else { // 오류
-                setOutput(result.stderr);
-                alert("오류가 발생했습니다.");
-            }
-        } catch (err) {
-            console.log(err);
-            alert("오류가 발생했습니다.\n" + err + "\n코드를 실행할 수 없습니다.");
-        } finally {
-            // 실행 버튼, 에디터 활성화
-            setIsCompiling(false);
+            setFileTabs(fileTabs.map(f => f.codeId === activeFileTab.codeId ? { ...f, value: value || "" } : f));
+        });
+
+        // 컴포넌트 언마운트 시 
+        return () => {
+            // 소켓 연결 종료
+            WebSocketService.disconnect();
+        };
+    }, [codingrooms]);
+
+    // avtiveFileTab.codeId 변경에 따른 렌더링
+    useEffect(() => {
+        if(!activeFileTab.codeId) {
+            return;
         }
-    };
+
+        // WebSocket 연결 및 메시지 처리
+        WebSocketService.resubscribe(codingrooms?.roomId as number, activeFileTab.codeId, (value: string) => {
+            // 활성화된 파일의 코드 변경
+            setActiveFileTab({ ...activeFileTab, value: value || "" });
+            // 파일 탭 목록 변경 (활성화된 파일만)
+            setFileTabs(fileTabs.map(f => f.codeId === activeFileTab.codeId ? { ...f, value: value || "" } : f));
+        });
+
+    }, [isTabChanged]);
 
     // editingFileTabIndex 상태값 변경에 따른 렌더링
     useEffect(() => {
-        // 클릭 이벤트
         // 클릭 영역이 input 내부가 아닐 경우
         const handleClickOutside = (event: MouseEvent) => {
-            // fileTabEditRef.current
-            // => 해당 ref로 지정된 DOM 요소
-            // !fileTabEditRef.current.contains(event.target as Node)
-            // => 해당 ref로 지정된 DOM 요소 내부에(contains)
-            // => 클릭된 요소(event.target as Node)가 포함되지 않는다면(!)
-            // 즉, 해당 ref 요소가 존재하고, 다른 영역을 클릭했을 경우
             if (fileTabEditRef.current && !fileTabEditRef.current.contains(event.target as Node)) {
-                // (해당 영역이 존재하고 && !해당 영역이 포함한다면(클릭된 요소))
-
-                // 편집 중인 파일 탭이 없는 것으로 변경
                 setEditingFileTabIndex(null);
                 setTmpFileTabName("");
             }
         };
 
-        // 파일 탭 명 편집 모드 중일 경우의 클릭 이벤트 리스너
         // handleClickOutside 함수는 클릭 위치가 input 내부가 아닐 경우
         if (editingFileTabIndex !== null) {
             document.addEventListener("click", handleClickOutside);
@@ -413,24 +164,10 @@ const CodeEditor: React.FC = () => {
         <>
             {/* 전체 영역 */}
             <div className="w-screen h-screen flex" style={{ backgroundColor: "#1E1E1E" }}>
-                {/* 
-                    w-full: 너비를 전체 너비로
-                    h-screen: 높이를 전체 높이로
-                    flex: 내부 요소들을 플렉스 아이템으로
-                */}
 
                 {/* 왼쪽 탭 */}
                 <div className="min-w-[60px] h-full flex flex-col items-center border-r border-black overflow-y-auto"
                     style={{ backgroundColor: "#1E1E1E", scrollbarColor: "#1E1E1E #333" }}>
-                    {/* 
-                        min-w-[60px]: 최소 너비 60px
-                        h-full: 높이를 전체 높이로
-                        flex: 내부 요소들을 플렉스 아이템으로
-                        flex-col: 플렉스 컨테이너 내 주 축을 세로로
-                        items-center: 플렉스 컨테이너 내 자식 요소들을 교차 축 기준 중앙 정렬 (flex-col에 의해 교차 축이 세로 축)
-                        border-r: 오른쪽에 1px 두께의 테두리를 추가
-                        border-black: 테두리 색상 변경
-                    */}
 
                     {/* 0. 메뉴 버튼 */}
                     <button
@@ -474,7 +211,8 @@ const CodeEditor: React.FC = () => {
                         className="my-2"
                         type="button"
                         id="left-save"
-                        title="실행">
+                        title="실행"
+                        onClick={() => saveEditedCode(activeFileTab.codeId, codingrooms?.roomId as number, activeFileTab.fileName, activeFileTab.value)}>
                         <SaveIcon
                             className="text-gray-300"
                             sx={{ fontSize: "2rem" }} />
@@ -657,16 +395,11 @@ const CodeEditor: React.FC = () => {
 
                 {/* 에디터 및 출력 영역 */}
                 <div className="min-w-[240px] h-screen flex flex-grow flex-col" style={{ backgroundColor: "#1E1E1E" }}>
-                    {/* 
-                        min-w-[240px]: 최소 너비 240px
-                        h-full: 높이를 전체 높이로
-                        flex-grow: 남는 공간에 대해, 해당 요소를 전부 채워줌
-                    */}
 
                     {/* 상단 탭 영역 */}
                     <div className="tabs bg-neutral-900 text-gray-300 flex flex-nowrap items-center">
                         {fileTabs.map((file, index) => (
-                            <div key={index} className={`flex items-center px-4 py-1 ${activeFileTab.name === file.name ? "bg-[#1E1E1E]" : "bg-neutral-900"}`}>
+                            <div key={index} className={`flex items-center px-4 py-1 ${activeFileTab.fileName === file.fileName ? "bg-[#1E1E1E]" : "bg-neutral-900"}`}>
                                 <button
                                     onClick={() => handleTabClick(file)}
                                     onDoubleClick={() => handleFileTabDoubleClick(index)}
@@ -682,12 +415,12 @@ const CodeEditor: React.FC = () => {
                                             className="bg-transparent text-gray-300 border-none focus:outline-none"
                                         />
                                     ) : (
-                                        file.name
+                                        file.fileName + "." + languageExtensions[codingrooms?.language]
                                     )}
 
                                 </button>
                                 <button
-                                    onClick={() => handleRemoveFile(file.name, index)}
+                                    onClick={() => handleRemoveFile(file, index)}
                                     className="ml-2"
                                     disabled={fileTabs.length <= 1} // 최소 1개의 파일이 남도록 비활성화
                                     id="remove-tab"
@@ -713,11 +446,11 @@ const CodeEditor: React.FC = () => {
                     {/* 코드 에디터 영역 */}
                     <div className="h-3/4 border-b border-black">
                         <Editor
-                            width="100%" // 부모 div의 크기에 맞게 100% 설정
+                            width="100%"
                             height="100%"
-                            language={language}  // 기본 언어
-                            defaultValue={codeSnippets[language]}
-                            value={activeFileTab.content}
+                            language={codingrooms?.language as string}
+                            defaultValue={codingrooms?.value as string}
+                            value={activeFileTab.value}
                             onChange={handleEditorChange}
                             onMount={onMount}
                             theme={themeMode ? "vs-light" : "vs-dark"}

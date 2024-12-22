@@ -1,6 +1,6 @@
 'use client';
 import '@/app/globals.css';
-import CodeEditor from '../(components)/codingrooms/CodeEditor';
+import CodeEditor from '../../(components)/codingrooms/[codingrooms_uuid]/CodeEditor';
 
 export default function Home() {
   return (
