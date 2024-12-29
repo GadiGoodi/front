@@ -1,10 +1,14 @@
 import "@/app/globals.css"
+import Link from "next/link";
 import Editor from "@monaco-editor/react";
+import { UUID } from "crypto";
 import { useEffect } from "react";
+import { useParams } from 'next/navigation';
+import useCodingrooms from "@/app/(hooks)/codingrooms/useCodingrooms";
+import { languageExtensions } from "@/app/(models)/codingrooms/CodingroomsDTO";
 import WebSocketService from "../../../(apis)/codingrooms/codingroomsWebSocket";
 
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-
 import MenuIcon from "@mui/icons-material/Menu";
 import FolderIcon from "@mui/icons-material/Folder"
 import SaveIcon from "@mui/icons-material/Save";
@@ -29,15 +33,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import AddIcon from "@mui/icons-material/Add";
 import SendIcon from "@mui/icons-material/Send";
 
-import Link from "next/link";
-import { useParams } from 'next/navigation';
-import useCodingrooms from "@/app/(hooks)/codingrooms/useCodingrooms";
-import { UUID } from "crypto";
-
 const CodeEditor: React.FC = () => {
     const {
         codingrooms, //, setCodingrooms,
-        languageVersions, languageExtensions,
         fileTabs, setFileTabs,
         activeFileTab, setActiveFileTab,
         isTabChanged, setIsTabChanged,

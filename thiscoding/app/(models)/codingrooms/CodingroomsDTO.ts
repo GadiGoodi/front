@@ -25,15 +25,6 @@ export interface CodingroomsCreateData {
     language: string;
 };
 
-// 코드 생성 및 저장 시, 입력 데이터
-// export interface CodeCreateData {
-//     id: string | null;
-//     roomId: number;
-//     writerId: number;
-//     fileName: string;
-//     value: string;
-// };
-
 // 가져올 코드 값
 export interface CodeGetData {
     id: string;
@@ -42,12 +33,6 @@ export interface CodeGetData {
     value: string;
     saveDate: string;
 };
-
-// export interface FileTabs {
-//     codeId: string;
-//     fileName: string;
-//     value: string;
-// };
 
 // 언어 별 초기 값
 export const codeSnippets: Readonly<Record<string, string>> = {
@@ -61,4 +46,32 @@ export const codeSnippets: Readonly<Record<string, string>> = {
     ruby: `# Ruby\n\nputs "Hello, World!"`,
     go: `/* Go */\n\npackage main\n\nimport (\n\t"fmt"\n)\n\nfunc main() {\n\tfmt.Println("Hello, World!")\n}`,
     swift: `// Swift\n\nprint("Hello, World!")`
+};
+
+// 언어 버전
+export const languageVersions: Readonly<Record<string, string>> = {
+    javascript: "18.15.0",
+    typescript: "5.0.3",
+    python: "3.10.0",
+    c: "10.2.0",
+    cpp: "10.2.0",
+    csharp: "6.12.0",
+    java: "15.0.2",
+    ruby: "3.0.1",
+    go: "1.16.2",
+    swift: "5.3.3"
+};
+
+// 언어 확장자
+export const languageExtensions: Readonly<Record<string, string>> = {
+    javascript: "js",
+    typescript: "ts",
+    python: "py",
+    c: "c",
+    cpp: "cpp",
+    csharp: "cs",
+    java: "java",
+    ruby: "rb",
+    go: "go",
+    swift: "swift",
 };
