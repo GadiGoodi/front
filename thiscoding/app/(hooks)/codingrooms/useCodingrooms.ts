@@ -1,7 +1,6 @@
 import CodingroomsApi from "@/app/(apis)/codingrooms/codingroomsApi";
 import WebSocketService from "../../(apis)/codingrooms/codingroomsWebSocket"
-import { codeSnippets } from "@/app/(models)/codingrooms/CodingroomsDTO";
-import { CodeGetData, CodingroomsGetData } from "@/app/(models)/codingrooms/CodingroomsDTO";
+import { CodeGetData, CodingroomsGetData, codeSnippets, languageVersions, languageExtensions } from "@/app/(models)/codingrooms/CodingroomsDTO";
 import { useRef, useState } from "react";
 import { editor } from "monaco-editor/esm/vs/editor/editor.api";
 import { OnChange } from "@monaco-editor/react";
@@ -24,34 +23,6 @@ const useCodingrooms = () => {
 
     // 가져올 코드 데이터
     // const [codeData, setCodeData] = useState<CodeGetData>();
-
-    // 언어 버전
-    const languageVersions: Readonly<Record<string, string>> = {
-        javascript: "18.15.0",
-        typescript: "5.0.3",
-        python: "3.10.0",
-        c: "10.2.0",
-        cpp: "10.2.0",
-        csharp: "6.12.0",
-        java: "15.0.2",
-        ruby: "3.0.1",
-        go: "1.16.2",
-        swift: "5.3.3"
-    };
-
-    // 언어 확장자
-    const languageExtensions: Readonly<Record<string, string>> = {
-        javascript: "js",
-        typescript: "ts",
-        python: "py",
-        c: "c",
-        cpp: "cpp",
-        csharp: "cs",
-        java: "java",
-        ruby: "rb",
-        go: "go",
-        swift: "swift",
-    };
 
     // 상단 파일 탭 목록
     const [fileTabs, setFileTabs] = useState([
@@ -434,8 +405,6 @@ const useCodingrooms = () => {
 
     return {
         codingrooms, //, setCodingrooms,
-        languageVersions, languageExtensions,
-
         fileTabs, setFileTabs,
         activeFileTab, setActiveFileTab,
         isTabChanged, setIsTabChanged,
