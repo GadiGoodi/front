@@ -43,13 +43,14 @@ const CodingroomsApi = () => {
         return result;
     };
 
+    // 코드방 목록 GET
     const getCodingroomsParticipations = async (id: number) => {
         const result = axios.get(`http://localhost:8080/api/codingrooms/participations/${id}`)
         .then(res => {
             return res.data;
         }).catch(err => {
-            console.log(err);
-            alert(err.response.data.message);
+           console.log(err);
+           alert(err.response.data.message);
         });
 
         return result;

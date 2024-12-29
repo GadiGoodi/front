@@ -166,7 +166,7 @@ const useCodingrooms = () => {
 
     // 키보드 이벤트 처리 (onKeyDown에서 Enter키를 눌렀을 때)
     // 파일 탭 이름 변경
-    const changeFileTabName = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    const changeFileTabName = async (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
         // 엔터를 누를 경우
         if (e.key === "Enter") {
             // index번째(현재) 탭의 값과, tmpFileTabName 값이 같을 경우
@@ -177,8 +177,8 @@ const useCodingrooms = () => {
             }
 
             // some은 조건을 만족할 경우 true 반환
-            // 중복되는 파일명이 있을 경우
-            if (fileTabs.some(f => f.fileName === `${tmpFileTabName}`)) {
+            // 중복되는 파일명이 있거나 codeId가 null인 경우
+            if (fileTabs.some(f => f.fileName === `${tmpFileTabName}` && f.codeId != null)) {
                 alert("파일명이 중복됩니다.");
                 closeFileTabInput();
                 return;
@@ -192,13 +192,32 @@ const useCodingrooms = () => {
                 return;
             }
 
-            // 업데이트할 파일 탭 배열에 원본 파일 탭 배열 복붙
+            const saveData = {
+                id: activeFileTab.codeId,
+                roomId: codingrooms.roomId,
+                writerId: 1,
+                fileName: tmpFileTabName,
+                value: activeFileTab.value
+            }
+
+            const result = await postEditedCode(saveData);
+            if (result) {
+                alert("변경했습니다.");
+            } else if (!result) {
+                return;
+            }
+
+            
+            // 업데이트할 파일 탭 배열에 원본 파일 탭 배열 복사
             const updatedFileTabs = [...fileTabs];
             // index번째의 name 값을 초기화
-            updatedFileTabs[index].fileName = `${tmpFileTabName}`;
+            updatedFileTabs[index].fileName = `${result.fileName}`;
+            updatedFileTabs[index].codeId = `${result.id}`;
+            updatedFileTabs[index].value = `${result.value}`;
             // fileTabs에 업데이트된 배열을 통째로 set
             setFileTabs(updatedFileTabs);
-            // setCodeData({...codeData, fileName: tmpFileTabName});
+            // activeFileTab에 업데이트된 파일 탭을 set
+            setActiveFileTab({ ...activeFileTab, fileName: result.fileName, value: result.value, codeId: result.id });
             closeFileTabInput();
             setTmpFileTabName("");
         }
@@ -305,8 +324,13 @@ const useCodingrooms = () => {
         if (result) {
             alert("저장했습니다.");
         } else if (!result) {
-            return null;
+            return;
         }
+
+        console.log("저장 결과:", result);
+        console.log("저장된 파일명:", result.fileName);
+        console.log("저장된 코드:", result.value);
+        console.log("저장된 코드 ID:", result.id);
 
         setActiveFileTab({ ...activeFileTab, fileName: result.fileName, value: result.value, codeId: result.id });
         setFileTabs(fileTabs.map(f => f.fileName === activeFileTab.fileName ? { ...f, name: result.fileName, value: result.value, codeId: result.id } : f));
