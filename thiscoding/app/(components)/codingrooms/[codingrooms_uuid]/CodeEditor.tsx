@@ -123,7 +123,7 @@ const CodeEditor: React.FC = () => {
         };
     }, [codingrooms]);
 
-    // avtiveFileTab.codeId 변경에 따른 렌더링
+    // isTabChanged 변경에 따른 렌더링 (탭 전환에 따른 재구독)
     useEffect(() => {
         if(!activeFileTab.codeId) {
             return;

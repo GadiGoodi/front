@@ -43,8 +43,8 @@ const CodingroomsApi = () => {
         return result;
     };
 
-    return { getCodingrooms,
-        getCode, postEditedCode }
+    return { getCodingrooms, getCode,
+        postEditedCode }
 }
 
 export default CodingroomsApi;
