@@ -4,7 +4,7 @@ const CodingroomsModalApi = () => {
 
     // 코드방 생성 POST
     const postCodingrooms = (data: any) => {
-        const result = axios.post("http://localhost:8080/api/codingrooms-modal", data)
+        const result = axios.post("http://localhost:8080/api/codingrooms-modal/create", data)
             .then(res => {
                 return res.data;
             }).catch(err => {
