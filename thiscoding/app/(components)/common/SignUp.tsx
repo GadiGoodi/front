@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import useSignUp from '@/app/(hooks)/useSignUp';
-import EmailVerification from '@/app/(components)/common/EmailVerification';
+import { postSignupInfo } from '@/app/(apis)/userApi';
 
 interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
@@ -15,15 +15,13 @@ interface Props {
 
 const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
   const {
-    isCodeSent,
-    handleEmailChange,
+    checkEmailAvailability,
+    nickCheckMessage,
+    nicknameValidationMessage,
     handleSendAuthCode,
     handleVerifyAuthCode,
-    // handleEmailChange,
-    // checkEmailDuplicate,
     setEmail,
     emailError,
-    email,
     setAuthCode,
     nicknameError,
     setNickname,
@@ -31,56 +29,25 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
     setPassword,
     showPassword,
     confirmPasswordError,
-    setConfirmPassword,
+    setCheckPassword,
     showConfirmPassword,
     isCheckboxChecked,
     checkboxError,
-    checkEmailAvailability,
     checkNicknameAvailability,
-    register,
-    validateEmail,
-    validateAuthCode,
-    validateNickname,
-    validatePassword,
     handleSubmit,
     handleCheckboxChange,
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
-    emailHandler,
-    // handleBackgroundClick,
-    // handleIssueCode,
-    // handleVerifyCode,
-    // renderTimer
+    handleIssue,
+    state,
+    errorMessage,
+    timer,
+    inputValue,
+    setInputValue,
+    email,
+    isEmailAvailable,
+    emailCheckMessage,
   } = useSignUp();
-
-  // const SignUpData = {
-  //   email: email,
-  //   // nickname: nickname,
-  //   password,
-  //   confirmPassword,
-  //   authCode,
-  //   isCheckboxChecked,
-  // };
-
-  // const {login, register} = userApi();
-  // const renderTimer = () => {
-  //   if (status === 'issued') {
-  //     const minutes = Math.floor(timer / 60);
-  //     const seconds = timer % 60;
-  //     return (
-  //       <p className="text-sm text-white">
-  //         남은 시간: {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-  //       </p>
-  //     );
-  //   }
-  //   if (status === 'verified')
-  //     return <p className="text-sm text-green-500">인증 완료</p>;
-  //   if (status === 'wrong')
-  //     return <p className="text-sm text-red-500">인증 올바르지 않음</p>;
-  //   if (status === 'expired')
-  //     return <p className="text-sm text-red-500">시간 초과</p>;
-  //   return null;
-  // };
 
   const handleBackgroundClick = () => {
     setCurrentModal(null);
@@ -88,9 +55,12 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
 
   return (
     <form
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      className="scrollbar-none fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
       onClick={handleBackgroundClick}
-      onSubmit={handleSubmit}
+      // onSubmit={(e) => {
+      //   e.preventDefault(); // form 제출 방지
+      //   handleSubmit(e); // 필요한 경우 명시적으로 호출
+      // }}
     >
       <div
         className="border border-white bg-[#2C2C2C] w-[520px] grid place-items-center rounded-lg"
@@ -108,91 +78,89 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               } bg-[#444444] text-white`}
               type="email"
               placeholder="이메일을 입력해주세요"
-              onChange={(e) => emailHandler(e)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                // setInputValue(e.target.value);
+              }}
             />
             <button
               type="button"
-              onClick={checkEmailAvailability}
+              onClick={() => checkEmailAvailability(email)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
             >
               중복체크
             </button>
           </div>
-          {emailError && (
-            <p className="text-left text-[#EA4B48] text-sm w-full">
-              {emailError}
-            </p>
-          )}
-          {/* 인증코드 */}
-          {/* <EmailVerification /> */}
-          <div className="w-full">
-            <div className="flex justify-start w-full text-white mb-2">
-              인증 코드
-            </div>
-            <div className="relative w-full">
-              <input
-                className={`h-14 rounded-xl w-full border-2 px-3 py-2 focus:outline-none ${
-                  status === 'wrong' || status === 'expired'
-                    ? 'border-red-500 bg-[#444444] text-white'
-                    : 'border-[#E6E6E6] bg-[#444444] text-white'
-                }`}
-                type="text"
-                placeholder="인증 코드를 입력해주세요"
-                // value={authCode}
-                onChange={(e) => setAuthCode(e.target.value)}
-                disabled={status === 'verified'}
-              />
-              <button
-                onClick={handleSendAuthCode}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
-              >
-                발급
-              </button>
-            </div>
-            {isCodeSent && (
-              <div>
-                <label>인증코드:</label>
+          {/* 에러 메시지 출력 */}
+          <p
+            className={`mt-2 text-left ${
+              emailCheckMessage === '사용 가능한 이메일입니다.'
+                ? 'text-blue-500'
+                : 'text-red-500'
+            }`}
+          >
+            {emailCheckMessage}
+          </p>
+
+          <div className="w-full mx-auto">
+            <div className="w-full">
+              {/* 인증 코드 입력 */}
+              <div className="flex justify-start w-full text-white mb-2 ">
+                인증 코드
+              </div>
+
+              <div className="relative w-full">
                 <input
+                  className={`h-14 rounded-xl w-full border-2 px-3 py-2 focus:outline-none ${
+                    state === 'wrong' || state === 'error'
+                      ? 'border-[#EA4B48] bg-[#444444] text-white'
+                      : 'border-[#E6E6E6] bg-[#444444] text-white'
+                  }`}
                   type="text"
-                  onChange={(e) => setAuthCode(e.target.value)}
-                  placeholder="인증코드 입력"
+                  placeholder={state === 'initial' ? '인증코드' : ''}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  disabled={state === 'success'}
                 />
-                <button onClick={handleVerifyAuthCode}>확인</button>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault(); // 폼 제출 방지
+                    e.stopPropagation(); // 클릭 이벤트 전파 방지
+                    if (state === 'initial' || state === 'timeout') {
+                      handleSendAuthCode(email); // 인증코드 발급 함수 호출
+                      handleIssue(); // 추가 동작 수행
+                    } else {
+                      handleVerifyAuthCode(email, inputValue); // 인증코드 확인 함수 호출
+                    }
+                  }}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
+                >
+                  {state === 'initial' || state === 'timeout' ? '발급' : '확인'}
+                </button>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '10px', color: '#555' }}>
+              {state === 'waiting' && timer > 0 && (
+                <span>{`남은 시간: ${Math.floor(timer / 60)}분 ${timer % 60}초`}</span>
+              )}
+              {state === 'success' && <span>인증 완료</span>}
+              {state === 'timeout' && (
+                <span style={{ color: '#EA4B48' }}>시간 초과</span>
+              )}
+            </div>
+            {/* 오류 메시지 표시 */}
+            {errorMessage && state !== 'timeout' && (
+              <div style={{ marginTop: '5px', color: '#EA4B48' }}>
+                {errorMessage} {/* 오류 메시지 표시 */}
               </div>
             )}
-            {/* {message && <p>{message}</p>} */}
-            {/* 타이머 및 상태 메시지 */}
-            {/* {renderTimer()} */}
           </div>
-          {/*
-          <div className="flex justify-start w-full text-white">인증 코드</div>
-          <div className="relative w-full">
-            <input
-              className={`h-14 rounded-xl w-full border-2 px-3 py-2 focus:outline-none ${
-                authCodeError
-                  ? 'border-red-500 bg-[#444444] text-white'
-                  : 'border-[#E6E6E6] bg-[#444444] text-white'
-              }`}
-              type="text"
-              placeholder="인증 코드를 입력해주세요"
-              value={authCode}
-              onChange={(e) => setAuthCode(e.target.value)}
-            />
-            <button
-              onClick={checkEmailAvailability}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
-            >
-              발급
-            </button>
-          </div>
-          {authCodeError && (
-            <p className="text-left text-[#EA4B48] text-sm w-full">
-              {authCodeError}
-            </p>
-          )} */}
+
           {/* 닉네임 */}
           <div className="flex justify-start w-full text-white">닉네임</div>
-          {/* 닉네임 중복 체크 */}
           <div className="relative w-full">
             <input
               className={`h-14 rounded-xl w-full border-2 px-3 py-2 focus:outline-none ${
@@ -204,15 +172,34 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
             />
             <button
               type="button"
-              onClick={() => checkNicknameAvailability}
+              // onClick={handleNicknameCheck}
+              onClick={() => checkNicknameAvailability(email)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
             >
               중복체크
             </button>
           </div>
-          {nicknameError && (
-            <p className="text-left text-[#EA4B48] text-sm w-full">
-              {nicknameError}
+          {/* 결과 메시지 */}
+
+          <p
+            className={`mt-2 text-start ${
+              nickCheckMessage === '사용 가능한 닉네임입니다.'
+                ? 'text-blue-500'
+                : 'text-red-500'
+            }`}
+          >
+            {nickCheckMessage}
+          </p>
+
+          {nicknameValidationMessage !== null && (
+            <p
+              className={`!text-left ${
+                nicknameValidationMessage === '사용 가능한 닉네임입니다.'
+                  ? 'text-green-500'
+                  : 'text-red-500'
+              }`}
+            >
+              {nicknameValidationMessage}
             </p>
           )}
 
@@ -233,7 +220,10 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호를 입력해주세요"
               // value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                console.log(e.target.value);
+                setPassword(e.target.value);
+              }}
             />
             <button type="button" onClick={togglePasswordVisibility}>
               {showPassword ? (
@@ -261,9 +251,9 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               }`}
               type={showConfirmPassword ? 'text' : 'password'}
               placeholder="비밀번호를 확인해주세요"
-              // value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => setCheckPassword(e.target.value)}
             />
+
             <button type="button" onClick={toggleConfirmPasswordVisibility}>
               {showConfirmPassword ? (
                 <VisibilityOffOutlinedIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[35px] cursor-pointer text-gray-400" />
@@ -287,6 +277,7 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
             />
             약관에 동의합니다.
           </div>
+
           {checkboxError && (
             <p className="text-left text-[#EA4B48] text-sm w-full">
               {checkboxError}
@@ -296,6 +287,7 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
             <button
               type="submit"
               className="w-full py-3 rounded-xl text-white bg-[#0095E8] hover:bg-[#007BB5]"
+              onClick={(e) => handleSubmit(e)}
             >
               회원가입
             </button>
@@ -307,9 +299,3 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
 };
 
 export default SignUp;
-function userHistory() {
-  throw new Error('Function not implemented.');
-}
-function userApi(): { login: any; register: any } {
-  throw new Error('Function not implemented.');
-}
