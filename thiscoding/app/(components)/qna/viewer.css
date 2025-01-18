@@ -1,0 +1,6 @@
+.list-page .toastui-editor-contents img {
+  display: none !important;
+}
+.toastui-editor-contents p {
+  margin: 0 !important;
+}

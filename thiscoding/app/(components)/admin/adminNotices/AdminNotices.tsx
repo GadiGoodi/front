@@ -4,6 +4,9 @@ import Link from "next/link";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { AdminNoticesListDTO } from "@/app/(models)/admin/adminNotices/AdminNoticesListDTO";
+import { useRouter } from "next/navigation";
+import { axiosInstance } from "@/app/(hooks)/axiosConfig";
+import { axiosWithAuth } from "@/app/(models)/axiosWithAuth";
 const AdminNotices = () => {
 
   const [NoticesList, setNoticesList] = useState<Array<AdminNoticesListDTO>>([]);
@@ -12,12 +15,11 @@ const AdminNotices = () => {
     getNoticesList();
   }, []);
 
-
-  const page = 0;
+  const page = 1;
 
   //관리자 공지사항 목록 조회 API
   const getNoticesList = () => {
-    const result = axios.get(`http://localhost:8080/api/admin/notices?page=${page}`)
+    const result = axiosWithAuth.get(`/api/admin/notices?page=${page}`)
       .then(res => {
         console.log(res.data.content);
         setNoticesList(res.data.content);

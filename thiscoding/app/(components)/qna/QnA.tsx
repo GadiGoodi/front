@@ -97,7 +97,7 @@ const QnA = () => {
             <div className="border-t border-0.5 border-black w-full " />
             {qnaList?.map(qna => (
               <QnAContent
-                key={qna.id}
+                key={qna.qnaId}
                 qna={qna}
               />
             ))}

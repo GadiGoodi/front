@@ -16,7 +16,7 @@ const Comment = ({ comment }: { comment: QnaCommentType }) => {
 
   return (
     <>
-      <div className="flex-col border-black justfy-center items-center mx-[50] border-y border-collapse">
+      <div className="flex-col border-black justfy-center items-center mx-[50] border-t border-collapse">
         <div className='flex justify-between items-center mt-2'>
           <div className='flex'>
             <div className='w-10 h-10 rounded-full border border-black'>사진</div>

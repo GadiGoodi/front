@@ -1,5 +1,5 @@
 export interface QnaCommentType {
-  id: number;
+  replyId: number;
   nickname: string;
   content: string;
   parentId: number;
