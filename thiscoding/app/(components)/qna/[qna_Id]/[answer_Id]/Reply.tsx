@@ -11,7 +11,7 @@ const Reply = () => {
 
   return (
     <>
-      <div className="flex-col border-black justfy-center items-center mx-[50] border-y border-collapse">
+      <div className="flex-col border-black justfy-center items-center border-t border-collapse">
         <div className='flex justify-between items-center mt-2 ml-[10]'>
           <div className='flex'>
             <ReplyIcon className='!text-3xl mr-1 transform rotate-180' />

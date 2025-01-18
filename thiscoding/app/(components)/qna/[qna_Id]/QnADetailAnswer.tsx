@@ -6,7 +6,7 @@ import SendIcon from '@mui/icons-material/Send';
 import useQnA from '@/app/(hooks)/qna/useQnA';
 
 const QnADetailAnswer = () => {
-  const { isComment, isReply, setIsReply, PostCommentHandler } = useQnA()
+  const { isComment, isReply, setIsReply, PostCommentHandler, setCommentContent } = useQnA()
 
 
   return (
@@ -38,7 +38,7 @@ const QnADetailAnswer = () => {
         </button>
         {isComment === true ?
           <>
-            <textarea onChange={(e) => PostCommentHandler(e)} className="resize-none w-full border border-[#D0D0D0] bg-[#EBEBEB] rounded-lg h-24 flex justify-start items-start" placeholder="작성할 댓글의 내용을 입력해주세요." />
+            <textarea onChange={(e) => setCommentContent(e.target.value)} className="resize-none w-full border border-[#D0D0D0] bg-[#EBEBEB] rounded-lg h-24 flex justify-start items-start" placeholder="작성할 댓글의 내용을 입력해주세요." />
             <button className="flex justify-end w-full">
               <SendIcon />
             </button>

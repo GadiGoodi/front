@@ -8,9 +8,8 @@ const usePostQna = () => {
   const [postQnaList, setPostQnaList] = useState<Array<PostQnaType>>([]);
 
 
-
-  const fetchQnaList = async (id: number) => {
-    const result = await getQnaList(id)
+  const fetchQnaList = async () => {
+    const result = await getQnaList()
     setPostQnaList(result);
   }
 

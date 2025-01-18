@@ -1,5 +1,4 @@
 import { Editor } from "@toast-ui/react-editor"
-import { MutableRefObject, RefObject, useCallback, useRef } from "react";
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax'
 import '@toast-ui/editor/dist/toastui-editor.css'
 import '@toast-ui/editor/dist/theme/toastui-editor-dark.css'
@@ -23,22 +22,18 @@ const ToastUi = ({ editorRef, onChangeEditor }: any) => {
     const path = "post";
     // blob은 base64 인코딩된 이미지 파일
     const formData = new FormData()
-    console.log(blob);
     formData.append('image', blob)
     formData.append('path', path)
 
     try {
       const imageRes = await getUrlImage(formData);
-      const image_URL = imageRes.data.imageURL
-      setImage(image_URL)
-
+      setImage(imageRes)
       // 글 화면에 이미지 띄우기
-      callback(image_URL, 'image')
+      callback(imageRes.path)
     } catch {
       console.error();
     }
   }
-
   return (
     <>
       <Editor ref={editorRef}

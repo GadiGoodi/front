@@ -11,8 +11,7 @@ const PostQnA = () => {
   const { fetchQnaList, postQnaList } = usePostQna();
 
   useEffect(() => {
-    // fetchQnaList(Number(params.qna_Id)) << 나중에 memberId로 대체
-    fetchQnaList(1)
+    fetchQnaList()
   }, [])
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(0);
@@ -42,7 +41,7 @@ const PostQnA = () => {
           </Link>
         </div>
         <div className="border-b border-black mx-[50]" />
-        {postQnaList.map(qna => (
+        {postQnaList?.map(qna => (
           <PostQnAContent
             key={qna.id}
             qna={qna}

@@ -18,7 +18,7 @@ const UserPostQnA = () => {
     if (!editorRef.current) return;
     const markdown = editorRef.current.getInstance().getMarkdown();
     const html = editorRef.current.getInstance().getHTML();
-    setContent(html);
+    setContent(markdown);
   }, []);
 
   const postQnaSwal = () => {
@@ -35,10 +35,10 @@ const UserPostQnA = () => {
       cancelButtonText: '취소',
     }).then(result => {
       if (result.isConfirmed) {
-        content ? qnaData.content = content : qnaData.content = markDown
+        qnaData.content = content
         console.log(qnaData.content);
-        // createQnA();
-        Swal.fire('QnA 작성이 완료되었습니다.');
+        createQnA();
+        // Swal.fire('QnA 작성이 완료되었습니다.');
         router.push('/qna')
       }
     });
