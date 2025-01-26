@@ -5,8 +5,9 @@ import UserStore from "@/app/store/store";
 import { loginType } from "@/app/type";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
+import useModalStore from "@/app/store/store";
 
-const useLogin = (setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>) => {
+const useLogin = () => {
 
 
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +25,8 @@ const useLogin = (setCurrentModal: React.Dispatch<React.SetStateAction<string | 
     deleteUserInfo,
     deleteToken,
   } = UserStore();
+  const { openModal, closeModal } = useModalStore();
+
 
   const login = useMutation({
     mutationFn: (loginInfo: loginType) => postLoginInfo(loginInfo),
@@ -39,7 +42,8 @@ const useLogin = (setCurrentModal: React.Dispatch<React.SetStateAction<string | 
           atk: res.headers['authorization'],
         });
         setSuccess(true); 
-      setCurrentModal(null);
+      // setCurrentModal(null);
+      closeModal();
     },
     onError: (error) => {
       console.error('로그인 실패:', error);
@@ -50,13 +54,15 @@ const useLogin = (setCurrentModal: React.Dispatch<React.SetStateAction<string | 
   
   // 배경 클릭 시 모달 닫기
   const handleBackgroundClick = () => {
-    setCurrentModal(null);
+    // setCurrentModal(null);
+    closeModal();
   };
 
   // 비밀번호 보였다 안보였다
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
 
   // 엔터 클릭으로 로그인
   // const handleKeyDow = (e: React.KeyboardEvent) => {
@@ -78,16 +84,6 @@ const useLogin = (setCurrentModal: React.Dispatch<React.SetStateAction<string | 
     return '';
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   try {
-  //     await handleLogin({ email, password });
-  //     alert('로그인 성공');
-  //   } catch {
-  //     alert('로그인 실패. 다시 시도해주세요.');
-  //   }
-  // };
-
   const emailHanler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
   };
@@ -105,28 +101,37 @@ const useLogin = (setCurrentModal: React.Dispatch<React.SetStateAction<string | 
     };
   
     try {
-      // mutateAsync를 사용하여 비동기 로그인 처리
-      await login.mutateAsync(info); 
-      console.log('로그인 성공');
-      // setCurrentModal(null);
+      const response = await login.mutateAsync(info);
+      
+      console.log('로그인 응답 데이터:', response); // 응답 데이터 전체 출력
+  
+      if (response?.data) {
+        // 로그인 성공 시 유저 정보를 UserStore에 저장
+        UserStore.getState().setUserInfo({
+          email: response.data.email,
+          nickname: response.data.nickname,
+          imageUrl: response.data.imageUrl,
+          password: '', 
+        });
+      }
     } catch (error) {
       console.error('로그인 실패:', error);
+      alert('로그인 실패! 다시 시도해주세요.');
     }
   };
-  
-  
 
   const logout = () => {
     postLogout();
     deleteUserInfo();
     deleteToken();
+    alert('로그아웃 되었습니다.');
+  };
 
     // if (pathname === '/home') {
     //   router.refresh();
     // } else {
     //   router.push('/');
     // }
-  };
   // const router = useRouter(); // next/navigation 사용
   // const [success, setSuccess] = useState(false); // success 상태 관리
 
