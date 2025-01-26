@@ -4,33 +4,36 @@ import '@/app/globals.css';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import { useState } from 'react';
+import useSignUp from '@/app/(hooks)/useSignUp';
+import useModalStore from '@/app/store/store';
 
 interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const FindPassword: React.FC<Props> = ({ setCurrentModal }) => {
+const FindPassword = () => {
+  const { handleSendPassword, verifyAuthCode, updatePassword } = useSignUp();
   const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState('');
   const [authCode, setAuthCode] = useState('');
-  const [authCodeError, setAuthCodeError] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+
+  const [emailError, setEmailError] = useState('');
+  const [authCodeError, setAuthCodeError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [checkboxError, setCheckboxError] = useState('');
+
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
+  const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null);
+  const { openModal, closeModal } = useModalStore();
 
   const validateEmail = (value: string) => {
     const EMAIL_REGEX =
       /^[0-9a-zA-Z]([-.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
     if (!value) return '필수 입력사항입니다.';
     if (!EMAIL_REGEX.test(value)) return '이메일 형식이 올바르지 않습니다.';
-    return '';
-  };
-
-  const validateAuthCode = (value: string) => {
-    if (!value) return '인증 코드가 올바르지 않습니다.';
     return '';
   };
 
@@ -43,11 +46,44 @@ const FindPassword: React.FC<Props> = ({ setCurrentModal }) => {
     return '';
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendPasswordClick = async () => {
+    const error = validateEmail(email);
+    if (error) {
+      setEmailError(error);
+      return;
+    }
+    setLoading(true);
+    setFeedbackMessage(null);
+    try {
+      await handleSendPassword(email);
+      setFeedbackMessage('임시 비밀번호가 이메일로 발송되었습니다.');
+    } catch (error) {
+      setFeedbackMessage('임시 비밀번호 전송에 실패했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleAuthCodeVerification = async () => {
+    if (!authCode) {
+      setAuthCodeError('인증 코드를 입력해주세요.');
+      return;
+    }
+    setLoading(true);
+    setFeedbackMessage(null);
+    try {
+      await verifyAuthCode(authCode);
+      setFeedbackMessage('인증이 완료되었습니다.');
+    } catch (error) {
+      setFeedbackMessage('인증 코드가 올바르지 않습니다.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setEmailError(validateEmail(email));
-    setAuthCodeError(validateAuthCode(authCode));
     setPasswordError(validatePassword(password));
     setConfirmPasswordError(
       password !== confirmPassword ? '비밀번호가 일치하지 않습니다.' : '',
@@ -56,16 +92,24 @@ const FindPassword: React.FC<Props> = ({ setCurrentModal }) => {
 
     if (
       !validateEmail(email) &&
-      !validateAuthCode(authCode) &&
       !validatePassword(password) &&
       password === confirmPassword &&
       isCheckboxChecked
     ) {
-      alert('비밀번호 찾기 성공!');
+      setLoading(true);
+      setFeedbackMessage(null);
+      try {
+        await updatePassword(authCode, password);
+        alert('비밀번호가 성공적으로 변경되었습니다.');
+        openModal('login');
+      } catch (error) {
+        setFeedbackMessage('비밀번호 변경에 실패했습니다.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
-  // 약관 동의 눌렀는지 확인
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setIsCheckboxChecked(e.target.checked);
     setCheckboxError('');
@@ -74,37 +118,32 @@ const FindPassword: React.FC<Props> = ({ setCurrentModal }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // 비밀번호 보였다 안보였다...
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // 비밀번호 확인 보였다 안보였다...
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
-  // 모달 외부 클릭 시 모달 닫기
   const handleBackgroundClick = (e: React.MouseEvent) => {
-    // 모달 배경을 클릭했을 때만 모달을 닫음
     if (e.target === e.currentTarget) {
-      setCurrentModal(null); // 모달 닫기
+      closeModal();
     }
   };
 
   return (
     <form
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-      onClick={handleBackgroundClick} // 배경 클릭 시 모달 닫기
+      onClick={handleBackgroundClick}
       onSubmit={handleSubmit}
     >
       <div
         className="border border-white bg-[#2C2C2C] w-[520px] grid place-items-center rounded-lg"
-        onClick={(e) => e.stopPropagation()} // 모달 내부 클릭 시 이벤트 전파 막기
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="w-[470px] py-20 grid place-items-center gap-5 overflow-y-auto max-h-[90vh]">
           <div className="text-white text-2xl font-bold">비밀번호 찾기</div>
-          {/* 이메일 */}
           <div className="flex justify-start w-full text-white">이메일 </div>
           <div className="relative w-full">
             <input
@@ -247,7 +286,7 @@ const FindPassword: React.FC<Props> = ({ setCurrentModal }) => {
           <div className="text-white flex space-x-1.5">
             <span>이미 계정이 있으신가요?</span>
             <button
-              onClick={() => setCurrentModal('login')}
+              onClick={() => openModal('login')}
               className="text-[#0095E8] font-bold"
             >
               로그인

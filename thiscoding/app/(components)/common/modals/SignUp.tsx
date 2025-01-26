@@ -8,12 +8,13 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import useSignUp from '@/app/(hooks)/useSignUp';
 import { postSignupInfo } from '@/app/(apis)/userApi';
+import useModalStore from '@/app/store/store';
 
 interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
+const SignUp = () => {
   const {
     checkEmailAvailability,
     nickCheckMessage,
@@ -47,10 +48,12 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
     email,
     isEmailAvailable,
     emailCheckMessage,
+    nickname,
   } = useSignUp();
+  const { openModal, closeModal } = useModalStore();
 
   const handleBackgroundClick = () => {
-    setCurrentModal(null);
+    closeModal();
   };
 
   return (
@@ -80,7 +83,6 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               placeholder="이메일을 입력해주세요"
               onChange={(e) => {
                 setEmail(e.target.value);
-                // setInputValue(e.target.value);
               }}
             />
             <button
@@ -91,7 +93,6 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               중복체크
             </button>
           </div>
-          {/* 에러 메시지 출력 */}
           <p
             className={`mt-2 text-left ${
               emailCheckMessage === '사용 가능한 이메일입니다.'
@@ -126,13 +127,13 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.preventDefault(); // 폼 제출 방지
-                    e.stopPropagation(); // 클릭 이벤트 전파 방지
+                    e.preventDefault();
+                    e.stopPropagation();
                     if (state === 'initial' || state === 'timeout') {
-                      handleSendAuthCode(email); // 인증코드 발급 함수 호출
-                      handleIssue(); // 추가 동작 수행
+                      handleSendAuthCode(email);
+                      handleIssue();
                     } else {
-                      handleVerifyAuthCode(email, inputValue); // 인증코드 확인 함수 호출
+                      handleVerifyAuthCode(email, inputValue);
                     }
                   }}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
@@ -151,12 +152,6 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
                 <span style={{ color: '#EA4B48' }}>시간 초과</span>
               )}
             </div>
-            {/* 오류 메시지 표시 */}
-            {errorMessage && state !== 'timeout' && (
-              <div style={{ marginTop: '5px', color: '#EA4B48' }}>
-                {errorMessage} {/* 오류 메시지 표시 */}
-              </div>
-            )}
           </div>
 
           {/* 닉네임 */}
@@ -172,8 +167,7 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
             />
             <button
               type="button"
-              // onClick={handleNicknameCheck}
-              onClick={() => checkNicknameAvailability(email)}
+              onClick={() => checkNicknameAvailability(nickname)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
             >
               중복체크
@@ -219,7 +213,6 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               }`}
               type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호를 입력해주세요"
-              // value={password}
               onChange={(e) => {
                 console.log(e.target.value);
                 setPassword(e.target.value);
@@ -262,6 +255,13 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               )}
             </button>
           </div>
+
+          {errorMessage && state !== 'timeout' && (
+            <div style={{ marginTop: '5px', color: '#EA4B48' }}>
+              {errorMessage}
+            </div>
+          )}
+
           {confirmPasswordError && (
             <p className="text-left text-[#EA4B48] text-sm w-full">
               {confirmPasswordError}
