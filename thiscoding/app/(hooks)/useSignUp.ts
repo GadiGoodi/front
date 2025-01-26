@@ -181,21 +181,21 @@ const useSignUp = () => {
 
   const handleIssue = () => {
     setState('waiting');
-    setTimer(30); // 타이머 초기화 (10초)
+    setTimer(300); // 타이머 초기화 (10초)
     setErrorMessage(''); // 오류 메시지 초기화
     setInputValue(''); // 입력 값 초기화
   };
 
   const handleVerify = () => {
     if (inputValue.trim() === '') {
-      setErrorMessage('인증코드를 작성하세요'); // 입력값이 비어 있을 경우
+      setErrorMessage('인증코드를 작성하세요');
       return;
     }
   };
 
   const handleReissue = () => {
     setState('waiting');
-    setTimer(30); // 타이머 초기화
+    setTimer(300); // 타이머 초기화
     setErrorMessage(''); // 오류 메시지 초기화
     setInputValue(''); // 입력 값 초기화
   };
@@ -203,7 +203,7 @@ const useSignUp = () => {
   const EmailVerification = () => {
     // const { handleSendAuthCode } = useSignUp();
     const [state, setState] = useState('initial'); // "initial", "waiting", "success", "error", "timeout"
-    const [timer, setTimer] = useState(30); // 타이머 초기값 (10초)
+    const [timer, setTimer] = useState(300); // 타이머 초기값 (10초)
     const [errorMessage, setErrorMessage] = useState<string>(''); // 오류 메시지 상태
     const [inputValue, setInputValue] = useState<string>(''); // 입력 값 상태
     const [email, setEmail] = useState<string>(''); // 이메일 상태
@@ -293,29 +293,30 @@ const useSignUp = () => {
       )
       }
 
-      const [nickCheckMessage, setNicknameCheckMessage] = useState('');
-    
+    const [nickCheckMessage, setNicknameCheckMessage] = useState('');
+    const [newnickname, setNewnickname] = useState('');
+
   // 닉네임 중복 검사
-  const checkNicknameAvailability = async (nickname: string) => {
-    axios
-      .get(`http://localhost:8080/api/auth/nickname?nickname=${nickname}`)
-      .then((res) => {
-        if (nickname === '') {
-          setNicknameCheckMessage("닉네임을 입력하세요");
-          setNicknameError(true); 
-        } else if (res.data === false) {
-          setNicknameCheckMessage("사용 가능한 닉네임입니다.");
-          setNicknameError(false);  
-        } else {
-          setNicknameCheckMessage("중복된 닉네임입니다.");
-          setNicknameError(true); 
-        }
-      })
-      .catch(() => {
-        setNicknameCheckMessage("중복된 닉네임 입니다.");
-        setNicknameError(true);
-      });
+  const [canUseNickname, setCanUseNickname] = useState<boolean | null>(null);
+
+  const checkNicknameAvailability = async (nickname: string): Promise<boolean> => {
+    try {
+      const res = await axios.get(
+        `http://localhost:8080/api/auth/nickname?nickname=${nickname}`
+      );
+      console.log('닉네임 중복체크 클릭');
+      console.log(res.data);
+      const canUse = res.data === false;
+      setCanUseNickname(canUse);
+      return canUse;
+    } catch (error) {
+      console.error(error);
+      setCanUseNickname(false);
+      return false; 
+    }
   };
+  
+  
   
   const register = async (signupInfo : signupType) => {
       const response = await postSignupInfo(signupInfo); // 서버에 데이터를 보내는 부분
@@ -394,6 +395,7 @@ const useSignUp = () => {
     setEmailError,
     password,
     checkPassword,
+    canUseNickname,
   }
 
 }
