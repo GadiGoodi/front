@@ -1,20 +1,22 @@
+'use client';
+
 import axios, { AxiosInstance } from 'axios';
 import Store from '@/app/store/store';
 
 export const axiosWithAuth: AxiosInstance = axios.create({
   baseURL: 'http://localhost:8080',
   headers: {
-    "Content-Type": 'application/json'
+    'Content-Type': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true,
 });
 
 export const axiosNonAuth: AxiosInstance = axios.create({
   baseURL: 'http://localhost:8080',
   headers: {
-    "Content-Type": 'application/json'
+    'Content-Type': 'application/json',
   },
-  withCredentials: true
+  withCredentials: true,
 });
 
 axiosWithAuth.interceptors.request.use((config) => {
@@ -25,45 +27,23 @@ axiosWithAuth.interceptors.request.use((config) => {
   } else {
     return Promise.reject(new Error('토큰이 없습니다.'));
   }
-  return config;
-});
 
-axiosNonAuth.interceptors.request.use((config) => {
-  const token = Store.getState().token.atk;
-  if (token) {
-    config.headers.Authorization = `${token}`;
-  }
   return config;
 });
 
 axiosWithAuth.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      window.location.href = '/member/login';
-      console.log(error);
-    } else if (error.response?.status === 403) {
-      alert('권한이 없습니다');
-      window.location.href = '/';
-    } else if (error.response?.status === 419) {
-    }
-  }
-);
+    const state = Store.getState();
 
-axiosNonAuth.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
     if (error.response?.status === 401) {
-      window.location.href = '/member/login';
-      console.log(error);
+      alert('로그인이 필요합니다.');
+      state.openModal('login'); // 로그인 모달 열기
     } else if (error.response?.status === 403) {
-      alert('권한이 없습니다');
-      window.location.href = '/';
-    } else if (error.response?.status === 419) {
+      alert('권한이 없습니다.');
+      state.openModal('signup'); // 회원가입 모달 열기
     }
+
+    return Promise.reject(error);
   }
 );

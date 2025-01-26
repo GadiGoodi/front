@@ -9,54 +9,55 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ProfileImg from '@/public/asset/defaultImage.png';
-import LogIn from './LogIn';
-import SignUp from './SignUp';
-import FindPassword from './FindPassword';
-import { useAuthStore } from '@/app/store/store';
+import LogIn from './modals/LogIn';
+import SignUp from './modals/SignUp';
+import FindPassword from './modals/FindPassword';
+import useAuthStore from '@/app/store/store';
 import CodingroomsModal from '../codingrooms/CodingroomsModal';
+import UserStore from '@/app/store/store';
+import useModalStore from '@/app/store/store';
+import Modal from '@/app/(components)/common/ModalManager';
 
 interface User {
-  name: string;
+  email: string;
   nickname: string;
-  profileImage: string;
+  imageUrl: string;
+  password: string;
 }
 
 const Headers = () => {
   const [profileDropDown, setProfileDropDown] = useState(false);
   const [currentModal, setCurrentModal] = useState<string | null>(null);
-  const [isLoggedIn, setISLoggedIn] = useState<boolean>(false); // 로그인 상태 관리
   const [user, setUser] = useState<User | null>(null); // 사용자 정보 상태 관리
+  const { isLoggedIn, userInfo, deleteToken, deleteUserInfo } = UserStore();
+  const { openModal, closeModal } = useModalStore();
 
-  // 로그인 상태와 사용자 정보를 로컬 스토리지에서 불러오는 useEffect
   useEffect(() => {
-    const storedIsLoggedIn = localStorage.getItem('isLoggedIn') === 'true'; // 'true'로 저장된 값 확인
-    const storedUser = localStorage.getItem('user');
+    console.log('userInfo:', userInfo.email);
+    console.log('isLoggedIn:', isLoggedIn());
 
-    if (storedIsLoggedIn && storedUser) {
-      setISLoggedIn(true);
-      setUser(JSON.parse(storedUser)); // JSON.parse()로 user 객체 불러오기
+    if (isLoggedIn()) {
+      setUser(userInfo);
+    } else {
+      setUser(null);
     }
-  }, []);
+  }, [isLoggedIn(), userInfo]);
 
   const dropDownHandler = () => {
     setProfileDropDown(!profileDropDown);
   };
+
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  const openModal = () => setIsModalOpen(!isModalOpen);
+  const coderoomOpenModal = () => setIsModalOpen(!isModalOpen);
 
   const handleLogout = () => {
     setUser(null);
-    setISLoggedIn(false);
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('user');
-    setCurrentModal(null); // 모달 닫기
+    deleteToken();
+    deleteUserInfo();
+    setCurrentModal(null);
     window.location.href = '/';
-
-    // 클라이언트 사이드에서 리다이렉트
-    // if (typeof window !== 'undefined') {
-    //   router.push('/'); // 메인 페이지로 이동
-    // }
+    alert('로그아웃 되었습니다.');
   };
 
   return (
@@ -66,7 +67,7 @@ const Headers = () => {
           THISCODING;
         </Link>
 
-        <button onClick={openModal} className="hover:text-[#0095E8]">
+        <button onClick={coderoomOpenModal} className="hover:text-[#0095E8]">
           코드방 생성
         </button>
         {isModalOpen && <CodingroomsModal />}
@@ -77,7 +78,7 @@ const Headers = () => {
         <Link href="/notices" className="hover:text-[#0095E8]">
           고객센터
         </Link>
-        {isLoggedIn ? (
+        {isLoggedIn() ? (
           <Link href="/mypage" className="hover:text-[#0095E8]">
             마이페이지
           </Link>
@@ -101,25 +102,23 @@ const Headers = () => {
           <NotificationsNoneOutlinedIcon style={{ fontSize: '30px' }} />
         </button>
 
-        {/* <div> */}
-        {/* 로그인 상태가 true일 때만 프로필 렌더링 */}
-        {isLoggedIn && user ? (
+        {isLoggedIn() && user ? (
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div onClick={dropDownHandler} className="relative cursor-pointer">
               <div className="flex items-center gap-2">
                 <input
                   className="bg-gray-700 size-10 rounded-full"
                   type="image"
-                  src={user?.profileImage || '/asset/defaultImage.png'} // user가 있으면 프로필 이미지 사용
+                  src={user?.imageUrl || '/asset/defaultImage.png'} // user가 있으면 프로필 이미지 사용
                   alt="프로필 이미지"
                 />
-                <span>{user?.name}</span>
+                <span>{userInfo?.nickname}</span>
               </div>
               {profileDropDown && (
                 <div className="w-[250px] h-[180px] bg-[#EFEFEF] rounded-2xl absolute right-2 top-14 flex-col justify-between items-center z-50">
                   <div className="border-b h-[70px] ml-4 mt-3">
                     <div>닉네임</div>
-                    <div className="text-[#666666]">{user?.name}</div>
+                    <div className="text-[#666666]">{userInfo?.nickname}</div>
                   </div>
                   <div className="h-[70px] ml-4 mt-3">
                     <Link href="/mypage" className="hover:text-[#0095E8]">
@@ -141,10 +140,14 @@ const Headers = () => {
             </div>
           </div>
         ) : (
-          <button onClick={() => setCurrentModal('login')}>로그인</button>
+          // <button onClick={() => setCurrentModal('login')}>로그인</button>
+          <>
+            <button onClick={() => openModal('login')}>로그인</button>
+            <Modal />
+          </>
         )}
 
-        {currentModal === 'login' && (
+        {/* {currentModal === 'login' && (
           <LogIn setCurrentModal={setCurrentModal} />
         )}
         {currentModal === 'signup' && (
@@ -152,14 +155,10 @@ const Headers = () => {
         )}
         {currentModal === 'find-password' && (
           <FindPassword setCurrentModal={setCurrentModal} />
-        )}
-        {/* </div> */}
+        )} */}
       </div>
     </header>
   );
 };
 
 export default Headers;
-function setIsModalOpen(arg0: boolean) {
-  throw new Error('Function not implemented.');
-}
