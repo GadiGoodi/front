@@ -13,14 +13,15 @@ import axios from 'axios';
 import router, { Router } from 'next/router';
 // import useSignUp from '@/app/(hooks)/useSignUp';
 import { useRouter } from 'next/navigation'; // next/navigation에서 useRouter 사용
-
 import useLogin from '@/app/(hooks)/user/useLogin';
+import useModalStore from '@/app/store/store';
 
 interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
+// const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
+const LogIn = () => {
   // const { handleKeyDown } = useSignUp();
   // const { login } = UserStore();
   const {
@@ -37,20 +38,22 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
     showPassword,
     togglePasswordVisibility,
     passwordError,
-  } = useLogin(setCurrentModal);
+  } = useLogin();
   const { userInfo } = UserStore();
 
   const router = useRouter();
 
   useEffect(() => {
     if (success) {
-      setCurrentModal(null); // 모달 닫기
+      // setCurrentModal(null); // 모달 닫기
+      closeModal();
       // 클라이언트 사이드에서만 실행
       if (typeof window !== 'undefined') {
         router.push('/');
       }
     }
   }, [success, router]);
+  const { openModal, closeModal } = useModalStore();
 
   return (
     // <form onSubmit={handleSubmit}>
@@ -119,7 +122,8 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
             </div>
             <button
               className="text-[#D0D0D0]"
-              onClick={() => setCurrentModal('find-password')}
+              // onClick={() => setCurrentModal('find-password')}
+              onClick={() => openModal('find-password')}
             >
               비밀번호 찾기
             </button>
@@ -140,7 +144,8 @@ const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
           <div className="flex space-x-1.5">
             <div className="text-[#D0D0D0]">아직 회원이 아니신가요?</div>
             <button
-              onClick={() => setCurrentModal('signup')}
+              // onClick={() => setCurrentModal('signup')}
+              onClick={() => openModal('signup')}
               className="text-[#0095E8] font-bold"
             >
               회원가입 하기

@@ -8,12 +8,13 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import useSignUp from '@/app/(hooks)/useSignUp';
 import { postSignupInfo } from '@/app/(apis)/userApi';
+import useModalStore from '@/app/store/store';
 
 interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
+const SignUp = () => {
   const {
     checkEmailAvailability,
     nickCheckMessage,
@@ -47,10 +48,13 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
     email,
     isEmailAvailable,
     emailCheckMessage,
+    nickname,
   } = useSignUp();
+  const { openModal, closeModal } = useModalStore();
 
   const handleBackgroundClick = () => {
-    setCurrentModal(null);
+    // (null);
+    closeModal();
   };
 
   return (
@@ -151,12 +155,6 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
                 <span style={{ color: '#EA4B48' }}>시간 초과</span>
               )}
             </div>
-            {/* 오류 메시지 표시 */}
-            {errorMessage && state !== 'timeout' && (
-              <div style={{ marginTop: '5px', color: '#EA4B48' }}>
-                {errorMessage} {/* 오류 메시지 표시 */}
-              </div>
-            )}
           </div>
 
           {/* 닉네임 */}
@@ -173,7 +171,7 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
             <button
               type="button"
               // onClick={handleNicknameCheck}
-              onClick={() => checkNicknameAvailability(email)}
+              onClick={() => checkNicknameAvailability(nickname)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
             >
               중복체크
@@ -262,6 +260,13 @@ const SignUp: React.FC<Props> = ({ setCurrentModal }) => {
               )}
             </button>
           </div>
+          {/* 오류 메시지 표시 */}
+          {errorMessage && state !== 'timeout' && (
+            <div style={{ marginTop: '5px', color: '#EA4B48' }}>
+              {errorMessage} {/* 오류 메시지 표시 */}
+            </div>
+          )}
+
           {confirmPasswordError && (
             <p className="text-left text-[#EA4B48] text-sm w-full">
               {confirmPasswordError}
