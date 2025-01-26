@@ -16,7 +16,6 @@ import Chatting from './(components)/common/Chatting';
 import Slider from 'react-slick';
 import SignUp from '@/app/(components)/common/modals/SignUp';
 import Login from '@/app/(components)/common/modals/LogIn';
-import LogIn from '@/app/(components)/common/modals/LogIn';
 import FindPassword from './(components)/common/modals/FindPassword';
 import useModalStore from '@/app/store/store';
 import Modal from '@/app/(components)/common/ModalManager';
