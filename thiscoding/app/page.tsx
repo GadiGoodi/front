@@ -14,10 +14,12 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ScrollUp from './(components)/common/ScrollUp';
 import Chatting from './(components)/common/Chatting';
 import Slider from 'react-slick';
-import SignUp from './(components)/common/SignUp';
-import Login from './(components)/common/LogIn';
-import LogIn from './(components)/common/LogIn';
-import FindPassword from './(components)/common/FindPassword';
+import SignUp from '@/app/(components)/common/modals/SignUp';
+import Login from '@/app/(components)/common/modals/LogIn';
+import LogIn from '@/app/(components)/common/modals/LogIn';
+import FindPassword from './(components)/common/modals/FindPassword';
+import useModalStore from '@/app/store/store';
+import Modal from '@/app/(components)/common/ModalManager';
 
 export default function Home() {
   const top10Items = Array(10).fill(null);
@@ -36,7 +38,7 @@ export default function Home() {
   };
 
   const [currentModal, setCurrentModal] = useState<string | null>(null);
-
+  const { openModal } = useModalStore();
   return (
     <div>
       <Headers />
@@ -75,17 +77,8 @@ export default function Home() {
         <div className="w-[60%] mr-10">
           <span className="text-[#0095E8] font-bold text-2xl">1만명</span>
           <span className="text-2xl">이 THISCODING;과 함께합니다.</span>
-          {/* <button onClick={() => setCurrentModal('login')}>로그인</button> */}
-          <button onClick={() => setCurrentModal('login')}>로그인</button>
-          {currentModal === 'login' && (
-            <LogIn setCurrentModal={setCurrentModal} />
-          )}
-          {currentModal === 'signup' && (
-            <SignUp setCurrentModal={setCurrentModal} />
-          )}
-          {currentModal === 'find-password' && (
-            <FindPassword setCurrentModal={setCurrentModal} />
-          )}
+          <button onClick={() => openModal('login')}>로그인 모달 테스트</button>
+          <Modal />
 
           <div className="my-10">
             THISCODING;은 ‘실시간으로 코드를 수정하며 의논할 수는 없을까?’ 라는
