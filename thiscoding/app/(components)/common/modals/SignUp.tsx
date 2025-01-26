@@ -53,7 +53,6 @@ const SignUp = () => {
   const { openModal, closeModal } = useModalStore();
 
   const handleBackgroundClick = () => {
-    // (null);
     closeModal();
   };
 
@@ -84,7 +83,6 @@ const SignUp = () => {
               placeholder="이메일을 입력해주세요"
               onChange={(e) => {
                 setEmail(e.target.value);
-                // setInputValue(e.target.value);
               }}
             />
             <button
@@ -95,7 +93,6 @@ const SignUp = () => {
               중복체크
             </button>
           </div>
-          {/* 에러 메시지 출력 */}
           <p
             className={`mt-2 text-left ${
               emailCheckMessage === '사용 가능한 이메일입니다.'
@@ -130,13 +127,13 @@ const SignUp = () => {
                 <button
                   type="button"
                   onClick={(e) => {
-                    e.preventDefault(); // 폼 제출 방지
-                    e.stopPropagation(); // 클릭 이벤트 전파 방지
+                    e.preventDefault();
+                    e.stopPropagation();
                     if (state === 'initial' || state === 'timeout') {
-                      handleSendAuthCode(email); // 인증코드 발급 함수 호출
-                      handleIssue(); // 추가 동작 수행
+                      handleSendAuthCode(email);
+                      handleIssue();
                     } else {
-                      handleVerifyAuthCode(email, inputValue); // 인증코드 확인 함수 호출
+                      handleVerifyAuthCode(email, inputValue);
                     }
                   }}
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
@@ -170,7 +167,6 @@ const SignUp = () => {
             />
             <button
               type="button"
-              // onClick={handleNicknameCheck}
               onClick={() => checkNicknameAvailability(nickname)}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[70px] cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
             >
@@ -217,7 +213,6 @@ const SignUp = () => {
               }`}
               type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호를 입력해주세요"
-              // value={password}
               onChange={(e) => {
                 console.log(e.target.value);
                 setPassword(e.target.value);
@@ -260,10 +255,10 @@ const SignUp = () => {
               )}
             </button>
           </div>
-          {/* 오류 메시지 표시 */}
+
           {errorMessage && state !== 'timeout' && (
             <div style={{ marginTop: '5px', color: '#EA4B48' }}>
-              {errorMessage} {/* 오류 메시지 표시 */}
+              {errorMessage}
             </div>
           )}
 

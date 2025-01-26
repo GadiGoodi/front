@@ -55,7 +55,7 @@ const FindPassword = () => {
     setLoading(true);
     setFeedbackMessage(null);
     try {
-      await handleSendPassword(email); // 이메일로 임시 비밀번호 전송
+      await handleSendPassword(email);
       setFeedbackMessage('임시 비밀번호가 이메일로 발송되었습니다.');
     } catch (error) {
       setFeedbackMessage('임시 비밀번호 전송에 실패했습니다.');
@@ -72,7 +72,7 @@ const FindPassword = () => {
     setLoading(true);
     setFeedbackMessage(null);
     try {
-      await verifyAuthCode(authCode); // 인증 코드 확인
+      await verifyAuthCode(authCode);
       setFeedbackMessage('인증이 완료되었습니다.');
     } catch (error) {
       setFeedbackMessage('인증 코드가 올바르지 않습니다.');
@@ -99,9 +99,8 @@ const FindPassword = () => {
       setLoading(true);
       setFeedbackMessage(null);
       try {
-        await updatePassword(authCode, password); // 비밀번호 업데이트
+        await updatePassword(authCode, password);
         alert('비밀번호가 성공적으로 변경되었습니다.');
-        // setCurrentModal('login'); // 로그인 모달로 이동
         openModal('login');
       } catch (error) {
         setFeedbackMessage('비밀번호 변경에 실패했습니다.');
@@ -158,11 +157,7 @@ const FindPassword = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <button
-              onClick={handleSendPasswordClick}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer bg-[#0095E8] rounded-md text-white p-1"
-              disabled={loading}
-            >
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer bg-[#0095E8] rounded-md text-white p-1">
               비밀번호 재발급
             </button>
           </div>
@@ -171,12 +166,132 @@ const FindPassword = () => {
               {emailError}
             </p>
           )}
-          {feedbackMessage && (
-            <p className="text-left text-[#0095E8] text-sm w-full">
-              {feedbackMessage}
+          {/* 재발급된 비밀번호 */}
+          <div className="flex justify-start w-full text-white">
+            재발급된 비밀번호
+          </div>
+          <div className="relative w-full">
+            <input
+              className={`h-14 rounded-xl w-full border-2 px-3 py-2 focus:outline-none ${
+                authCodeError
+                  ? 'border-red-500 bg-[#444444] text-white'
+                  : 'border-[#E6E6E6] bg-[#444444] text-white'
+              }`}
+              type="text"
+              placeholder="이메일로 재발급된 비밀번호를 입력해주세요"
+              value={authCode}
+              onChange={(e) => setAuthCode(e.target.value)}
+            />
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer bg-[#0095E8] rounded-md text-white p-1">
+              비밀번호 확인
+            </button>
+          </div>
+          {authCodeError && (
+            <p className="text-left text-[#EA4B48] text-sm w-full">
+              {authCodeError}
             </p>
           )}
-          {/* 나머지 기존 코드 유지 */}
+          {/* 새로운 비밀번호 */}
+          <div className="flex justify-start w-full text-white items-center">
+            비밀번호
+            <span className="text-xs ml-2 leading-normal font-light">
+              ( 영문, 숫자, 특수문자 조합하여 8~16자 )
+            </span>
+          </div>
+
+          <div className="relative w-full">
+            <input
+              className={`h-14 rounded-xl w-full border-2 px-3 py-2 focus:outline-none ${
+                passwordError
+                  ? 'border-red-500 bg-[#444444] text-white'
+                  : 'border-[#E6E6E6] bg-[#444444] text-white'
+              }`}
+              type={showPassword ? 'text' : 'password'}
+              placeholder="새로운 비밀번호를 입력해주세요"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[30px] h-[30px] flex justify-center items-center cursor-pointer text-[#D0D0D0]"
+              onClick={togglePasswordVisibility}
+            >
+              {showPassword ? (
+                <VisibilityOffOutlinedIcon />
+              ) : (
+                <VisibilityOutlinedIcon />
+              )}
+            </button>
+          </div>
+          {passwordError && (
+            <p className="text-left text-[#EA4B48] text-sm w-full">
+              {passwordError}
+            </p>
+          )}
+          {/* 비밀번호 확인 */}
+          <div className="flex justify-start w-full text-white">
+            비밀번호 확인
+          </div>
+          <div className="relative w-full">
+            <input
+              className={`h-14 rounded-xl w-full border-2 px-3 py-2 focus:outline-none ${
+                confirmPasswordError
+                  ? 'border-red-500 bg-[#444444] text-white'
+                  : 'border-[#E6E6E6] bg-[#444444] text-white'
+              }`}
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder="새로운 비밀번호를 다시 입력해주세요"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-[30px] h-[30px] flex justify-center items-center cursor-pointer text-[#D0D0D0]"
+              onClick={toggleConfirmPasswordVisibility}
+            >
+              {showConfirmPassword ? (
+                <VisibilityOffOutlinedIcon />
+              ) : (
+                <VisibilityOutlinedIcon />
+              )}
+            </button>
+          </div>
+          {confirmPasswordError && (
+            <p className="text-left text-[#EA4B48] text-sm w-full">
+              {confirmPasswordError}
+            </p>
+          )}
+          {/* 약관 동의 */}
+          <div className="w-full flex items-center justify-start">
+            <input
+              type="checkbox"
+              checked={isCheckboxChecked}
+              onChange={handleCheckboxChange}
+            />
+            <div className="ml-2 text-white text-sm">약관에 동의합니다.</div>
+          </div>
+
+          {checkboxError && (
+            <p className="text-left text-[#EA4B48] text-sm w-full">
+              {checkboxError}
+            </p>
+          )}
+          {/* 제출 버튼 */}
+          <button
+            className="w-full py-2 bg-[#0095E8] text-white rounded-xl"
+            type="submit"
+          >
+            비밀번호 변경하기
+          </button>
+          <div className="text-white flex space-x-1.5">
+            <span>이미 계정이 있으신가요?</span>
+            <button
+              onClick={() => openModal('login')}
+              className="text-[#0095E8] font-bold"
+            >
+              로그인
+            </button>
+          </div>
         </div>
       </div>
     </form>

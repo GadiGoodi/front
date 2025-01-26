@@ -3,16 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
-// import { login as apiLog, apiLogin, postLoginInfo, postLogout } from '@/app/(apis)/userApi';
-import UserStore from '@/app/store/store'; // Zustand store import
-import { loginType } from '@/app/type';
-import { usePathname } from 'next/navigation';
+import UserStore from '@/app/store/store';
 import { postLoginInfo, postLogout } from '@/app/(apis)/userApi';
-import { useMutation } from '@tanstack/react-query';
-import axios from 'axios';
-import router, { Router } from 'next/router';
-// import useSignUp from '@/app/(hooks)/useSignUp';
-import { useRouter } from 'next/navigation'; // next/navigation에서 useRouter 사용
+import { useRouter } from 'next/navigation';
 import useLogin from '@/app/(hooks)/user/useLogin';
 import useModalStore from '@/app/store/store';
 
@@ -20,10 +13,7 @@ interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
-// const LogIn: React.FC<Props> = ({ setCurrentModal }) => {
 const LogIn = () => {
-  // const { handleKeyDown } = useSignUp();
-  // const { login } = UserStore();
   const {
     email,
     password,
@@ -45,9 +35,7 @@ const LogIn = () => {
 
   useEffect(() => {
     if (success) {
-      // setCurrentModal(null); // 모달 닫기
       closeModal();
-      // 클라이언트 사이드에서만 실행
       if (typeof window !== 'undefined') {
         router.push('/');
       }
@@ -56,14 +44,13 @@ const LogIn = () => {
   const { openModal, closeModal } = useModalStore();
 
   return (
-    // <form onSubmit={handleSubmit}>
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 modal-overlay"
-      onClick={handleBackgroundClick} // 배경 클릭 시 호출
+      onClick={handleBackgroundClick}
     >
       <div
         className="border border-white bg-[#2C2C2C] w-[520px] grid place-items-center rounded-lg relative"
-        onClick={(e) => e.stopPropagation()} // 클릭 이벤트 전파 방지
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="w-[470px] py-20 grid place-items-center gap-5">
           <div className="text-white text-2xl font-bold">로그인</div>
@@ -72,9 +59,7 @@ const LogIn = () => {
             type="email"
             placeholder="이메일"
             value={email}
-            // onChange={(e) => setEmail(e.target.value)}
             onChange={(e) => emailHanler(e)}
-            // onKeyDown={handleKeyDown} // Enter 키 감지
           />
 
           {emailError && (
@@ -88,12 +73,7 @@ const LogIn = () => {
               type={showPassword ? 'text' : 'password'}
               placeholder="비밀번호"
               value={password}
-              // onChange={(e) => {
-              //   console.log(e.target.value);
-              //   setPassword(e.target.value);
-              // }}
               onChange={(e) => passwordHanler(e)}
-              // onKeyDown={handleKeyDown} // Enter 키 감지
             />
 
             {showPassword ? (
@@ -122,7 +102,6 @@ const LogIn = () => {
             </div>
             <button
               className="text-[#D0D0D0]"
-              // onClick={() => setCurrentModal('find-password')}
               onClick={() => openModal('find-password')}
             >
               비밀번호 찾기
@@ -144,7 +123,6 @@ const LogIn = () => {
           <div className="flex space-x-1.5">
             <div className="text-[#D0D0D0]">아직 회원이 아니신가요?</div>
             <button
-              // onClick={() => setCurrentModal('signup')}
               onClick={() => openModal('signup')}
               className="text-[#0095E8] font-bold"
             >
