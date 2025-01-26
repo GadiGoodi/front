@@ -10,10 +10,10 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import EditIcon from '@mui/icons-material/Edit';
 import defaultProfileImage from '@/public/asset/defaultImage.png';
 import useSignUp from '../(hooks)/useSignUp';
-import { useAuthStore } from '../store/store';
+import UserStore from '../store/store';
 
 const UserInfo: React.FC = () => {
-  const { deleteAccount } = useAuthStore();
+  const { userInfo } = UserStore();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -31,7 +31,7 @@ const UserInfo: React.FC = () => {
 
   const handleDeleteAccount = () => {
     if (window.confirm('정말로 계정을 삭제하시겠습니까?')) {
-      deleteAccount();
+      // deleteAccount();
     }
   };
 
@@ -103,10 +103,11 @@ const UserInfo: React.FC = () => {
     }
   };
 
+  const updateNickname = UserStore((state) => state.updateNickname);
   const handleNicknameChange = () => {
     if (isNicknameAvailable) {
-      setNickname(newNickname);
-      setNewNickname('');
+      updateNickname(newNickname); // UserStore의 updateNickname 호출
+      setNewNickname(nickname);
       setIsEditing(false);
     }
   };
@@ -189,7 +190,7 @@ const UserInfo: React.FC = () => {
           <div>
             <div>이메일</div>
             <div className="flex justify-between w-[480px] h-[40px] bg-[#D9D9D9] text-[#8A8A8A] p-2 rounded-lg ">
-              <span>{email}</span> {/* 로컬스토리지에서 이메일을 가져와 출력 */}
+              <span>{userInfo.email}</span>
               <span className="flex items-center">
                 <Image
                   src="/asset/naverIcon.png"
@@ -215,7 +216,7 @@ const UserInfo: React.FC = () => {
                   placeholder="최대 8자"
                 />
               ) : (
-                <span>{nickname}</span>
+                <span>{userInfo.nickname}</span>
               )}
 
               {isEditing ? (
