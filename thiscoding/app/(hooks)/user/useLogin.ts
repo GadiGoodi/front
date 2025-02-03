@@ -102,29 +102,31 @@ const useLogin = () => {
   
     try {
       const response = await login.mutateAsync(info);
-      
-      console.log('로그인 응답 데이터:', response); // 응답 데이터 전체 출력
   
-      if (response?.data) {
-        // 로그인 성공 시 유저 정보를 UserStore에 저장
-        UserStore.getState().setUserInfo({
-          email: response.data.email,
-          nickname: response.data.nickname,
-          imageUrl: response.data.imageUrl,
-          password: '', 
-        });
+      console.log('로그인 응답 데이터:', response);
+  
+      if (response?.status !== 200 || !response?.data) {
+        throw new Error('서버 응답 오류');
       }
+  
+      UserStore.getState().setUserInfo({
+        email: response.data.email,
+        nickname: response.data.nickname,
+        imageUrl: response.data.imageUrl,
+        password: '',
+      });
     } catch (error) {
       console.error('로그인 실패:', error);
       alert('로그인 실패! 다시 시도해주세요.');
     }
   };
+  
 
   const logout = () => {
     postLogout();
     deleteUserInfo();
     deleteToken();
-    alert('로그아웃 되었습니다.');
+    alert('로그아웃 되었습니다.')
   };
 
     // if (pathname === '/home') {
