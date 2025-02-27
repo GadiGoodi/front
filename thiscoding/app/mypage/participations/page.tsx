@@ -1,21 +1,7 @@
-"use client";
-import SideTap from "@/app/(components)/SideTap";
-import Participations from "@/app/(components)/mypage/participations/Participations";
-import Headers from "@/app/(components)/common/Headers";
-import "@/app/globals.css";
+import Participations from '@/features/participations/ui/Participations';
 
-const Page = () => {
-  return (
-    <div>
-      <Headers />
-      <div className="bg-neutral-200 h-screen">
-        <div className="p-[37px] mx-[50px] flex">
-          <SideTap />
-          <Participations />
-        </div>
-      </div>
-    </div>
-  );
+const Participation = () => {
+  return <Participations />;
 };
 
-export default Page;
+export default Participation;

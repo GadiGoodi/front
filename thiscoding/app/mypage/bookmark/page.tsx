@@ -1,16 +1,8 @@
-'use client'
-import "@/app/globals.css"
-import SideTap from "@/app/(components)/SideTap";
-import Headers from "@/app/(components)/common/Headers";
-import BookMarkQnA from "@/app/(components)/mypage/bookmark/BookMarkQnA";
-export default function Home() {
+import BookMarkQnA from '@/entities/bookmark/ui/BookMarkQnA';
+export default function BookMark() {
   return (
-    <div>
-      <Headers />
-      <div className="flex">
-        <SideTap />
-        <BookMarkQnA />
-      </div>
+    <div className="flex">
+      <BookMarkQnA />
     </div>
   );
 }

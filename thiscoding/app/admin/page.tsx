@@ -1,14 +1,9 @@
-'use client'
-import "@/app/globals.css"
-import SideTap from "../(components)/SideTap";
-import Headers from "../(components)/common/Headers";
-import Report from "../(components)/admin/Report"
-export default function Home() {
+import Report from '@/entities/admin/ui/Report';
+
+export default function Admin() {
   return (
-    <div>
-      <Headers />
-      <div className="flex">
-        <SideTap />
+    <div className="bg-neutral-200 h-screen">
+      <div className="p-[37px] mx-[50px] flex">
         <Report />
       </div>
     </div>

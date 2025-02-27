@@ -1,12 +1,4 @@
-'use client'
-import "@/app/globals.css"
-import Headers from "@/app/(components)/common/Headers";
-import Notices from "../(components)/notices/Notices";
+import Notices from '@/entities/notices/ui/list/Notices';
 export default function Home() {
-  return (
-    <div>
-      <Headers />
-      <Notices />
-    </div>
-  );
+  return <Notices />;
 }
