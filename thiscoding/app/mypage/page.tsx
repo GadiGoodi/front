@@ -1,16 +1,13 @@
 'use client';
 
-import '@/app/globals.css';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import SideTap from '@/app/(components)/SideTap';
-import Headers from '@/app/(components)/common/Headers';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined';
 import EditIcon from '@mui/icons-material/Edit';
-import defaultProfileImage from '@/public/asset/defaultImage.png';
-import useSignUp from '../(hooks)/useSignUp';
-import UserStore from '../store/store';
+import defaultProfileImage from 'public/png/defaultImage.png';
+import useSignUp from '@/features/auth/sign-up/useSignUp';
+import UserStore from '@/shared/store/store';
 
 const UserInfo: React.FC = () => {
   const { userInfo } = UserStore();
@@ -34,7 +31,6 @@ const UserInfo: React.FC = () => {
       // deleteAccount();
     }
   };
-
   useEffect(() => {
     if (nickname) {
       const user = localStorage.getItem('user');
@@ -183,7 +179,7 @@ const UserInfo: React.FC = () => {
   };
 
   return (
-    <div className="w-[960px] h-[650px] bg-white rounded-xl shadow-lg m-10">
+    <div className="w-[960px] h-[650px] bg-white rounded-xl shadow-lg mx-10">
       <div className="mx-[40px]">
         <div className="font-bold mt-[20px]">사용자 정보</div>
         <div className="flex justify-between items-center">
@@ -402,12 +398,10 @@ const UserInfo: React.FC = () => {
   );
 };
 
-export default function Home() {
+export default function MyPage() {
   return (
     <div>
-      <Headers />
       <div className="flex">
-        <SideTap />
         <UserInfo />
       </div>
     </div>
