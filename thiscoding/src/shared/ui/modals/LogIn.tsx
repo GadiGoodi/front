@@ -8,6 +8,9 @@ import { postLoginInfo, postLogout } from '@/features/auth/apis/userApi';
 import { useRouter } from 'next/navigation';
 import useLogin from '@/features/auth/log-in/useLogin';
 import useModalStore from '@/shared/store/store';
+// import  NaverLogin  from '@/entities/board/qna/apis/social';
+import NaverLogin from '@/shared/ui/common/social/NaverLogin';
+import GoogleLogin from '@/shared/ui/common/social/GoogleLogin';
 
 interface Props {
   setCurrentModal: React.Dispatch<React.SetStateAction<string | null>>;
@@ -28,20 +31,24 @@ const LogIn = () => {
     showPassword,
     togglePasswordVisibility,
     passwordError,
+    keepLoggedIn,
+    setKeepLoggedIn,
   } = useLogin();
-  const { userInfo } = UserStore();
+  const { openModal } = useModalStore();
 
   const router = useRouter();
 
-  useEffect(() => {
-    if (success) {
-      closeModal();
-      if (typeof window !== 'undefined') {
-        router.push('/');
-      }
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      loginHandler();
     }
-  }, [success, router]);
-  const { openModal, closeModal } = useModalStore();
+
+    const handleKeepLoggedInChange = (
+      e: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+      UserStore.getState().setKeepLoggedIn(e.target.checked);
+    };
+  };
 
   return (
     <div
@@ -60,6 +67,7 @@ const LogIn = () => {
             placeholder="이메일"
             value={email}
             onChange={(e) => emailHanler(e)}
+            onKeyDown={handleKeyDown}
           />
 
           {emailError && (
@@ -74,6 +82,7 @@ const LogIn = () => {
               placeholder="비밀번호"
               value={password}
               onChange={(e) => passwordHanler(e)}
+              onKeyDown={handleKeyDown}
             />
 
             {showPassword ? (
@@ -97,11 +106,15 @@ const LogIn = () => {
           )}
           <div className="w-full flex justify-between">
             <div className="flex gap-2">
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={keepLoggedIn}
+                onChange={(e) => setKeepLoggedIn(e.target.checked)}
+              />
               <div className="text-[#D0D0D0]">로그인 상태 유지</div>
             </div>
             <button
-              className="text-[#D0D0D0]"
+              className="text-[#D0D0D0] hover:text-white transition-colors duration-300"
               onClick={() => openModal('find-password')}
             >
               비밀번호 찾기
@@ -116,9 +129,8 @@ const LogIn = () => {
           </button>
           <div className="text-[#D0D0D0]">SNS계정으로 간편 로그인/회원가입</div>
           <div className="flex space-x-2.5">
-            {/* <NaverLogin />
+            <NaverLogin />
             <GoogleLogin />
-            <KakaoLogin /> */}
           </div>
           <div className="flex space-x-1.5">
             <div className="text-[#D0D0D0]">아직 회원이 아니신가요?</div>
