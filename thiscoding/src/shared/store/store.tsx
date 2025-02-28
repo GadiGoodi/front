@@ -1,5 +1,3 @@
-'use client';
-
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -7,7 +5,8 @@ interface userInfoType {
   email: string;
   nickname: string;
   imageUrl: string;
-  password: string;
+  keepLoggedIn: boolean;
+  role: string;
 }
 
 interface tokenType {
@@ -19,6 +18,7 @@ interface userState {
   token: tokenType;
   currentModal: 'login' | 'signup' | 'find-password' | null;
   isModalOpen: boolean;
+  keepLoggedIn: boolean;
 }
 
 interface userActions {
@@ -30,8 +30,9 @@ interface userActions {
   setNickname: (nickname: string) => void;
   updateNickname: (nickname: string) => void;
   isLoggedIn: () => boolean;
-
-  // 모달
+  isAdmin: () => boolean;
+  setKeepLoggedIn: (keep: boolean) => void;
+  checkStoredAuth: () => void;
   openModal: (modalType: 'login' | 'signup' | 'find-password') => void;
   closeModal: () => void;
 }
@@ -43,7 +44,8 @@ const defaultUserInfo: userInfoType = {
   email: '',
   imageUrl: '',
   nickname: '',
-  password: '',
+  keepLoggedIn: false,
+  role: '',
 };
 
 const UserStore = create<UserStoreType>()(
@@ -53,6 +55,7 @@ const UserStore = create<UserStoreType>()(
       token: defaultToken,
       currentModal: null,
       isModalOpen: false,
+      keepLoggedIn: false,
 
       setUserInfo: (userInfo: userInfoType) => {
         set({ userInfo });
@@ -85,6 +88,58 @@ const UserStore = create<UserStoreType>()(
 
       isLoggedIn: () => {
         return !!get().token.atk;
+      },
+
+      isAdmin: () => {
+        return get().isLoggedIn() && get().userInfo.role === 'ADMIN';
+      },
+
+      setKeepLoggedIn: (keep: boolean) => {
+        set({ keepLoggedIn: keep });
+      },
+
+      checkStoredAuth: () => {
+        const localUser = localStorage.getItem('user');
+        if (localUser) {
+          try {
+            const userData = JSON.parse(localUser);
+            set({
+              userInfo: {
+                email: userData.email || '',
+                nickname: userData.nickname || '',
+                imageUrl: userData.imageUrl || '',
+                keepLoggedIn: true,
+                role: userData.role || '',
+              },
+              token: { atk: userData.token || '' },
+              keepLoggedIn: true,
+            });
+            return;
+          } catch (e) {
+            console.error('로컬 스토리지 인증 정보 파싱 실패', e);
+          }
+        }
+
+        // 로컬 스토리지에 없으면 세션 스토리지 확인
+        const sessionUser = sessionStorage.getItem('user');
+        if (sessionUser) {
+          try {
+            const userData = JSON.parse(sessionUser);
+            set({
+              userInfo: {
+                email: userData.email || '',
+                nickname: userData.nickname || '',
+                imageUrl: userData.imageUrl || '',
+                keepLoggedIn: false,
+                role: userData.role || '',
+              },
+              token: { atk: userData.token || '' },
+              keepLoggedIn: false,
+            });
+          } catch (e) {
+            console.error('세션 스토리지 인증 정보 파싱 실패', e);
+          }
+        }
       },
 
       // 모달 관련
